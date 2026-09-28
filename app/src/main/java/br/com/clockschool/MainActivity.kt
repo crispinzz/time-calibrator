@@ -47,7 +47,8 @@ import android.view.ViewGroup.MarginLayoutParams
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var store: ClockStore
+    /** Sempre o relógio ativo. */
+    private val store get() = ClockStore(this)
     private lateinit var clock: LiveClockView
     private lateinit var pages: List<View>
     private lateinit var navIcons: List<ImageView>
@@ -60,7 +61,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        store = ClockStore(this)
 
         clock = findViewById(R.id.schoolClock)
         clock.secondsColor = color(R.color.text_tertiary)
@@ -254,9 +254,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refresh() {
+        val store = store
         val offset = store.offsetMillis
         val calibrated = store.isCalibrated
         clock.offsetMillis = offset
+        findViewById<TextView>(R.id.clockName).text = Clocks.name(this, store.clockId)
 
         val scheduled = String.format(Locale.US, "%02d:%02d", store.scheduledHour, store.scheduledMinute)
         findViewById<TextView>(R.id.quickSchedule).text = scheduled
@@ -286,7 +288,7 @@ class MainActivity : AppCompatActivity() {
             "Mande para um colega: ele aplica e fica com o mesmo horário, sem precisar calibrar."
         }
 
-        findViewById<TextView>(R.id.widgetsBadge).text = ClockWidgetProvider.widgetIds(this).size.toString()
+        findViewById<TextView>(R.id.widgetsBadge).text = Clocks.ids(this).size.toString()
         if (tab == 1) renderWidgetList()
     }
 
@@ -296,12 +298,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.newWidgetButton).apply {
             pressable(0.97f)
             setOnClickListener {
-                Sheets.widgetEditor(this@MainActivity, WidgetStyle(), "Novo widget", "Adicionar à tela inicial") { style, dialog ->
+                Sheets.widgetEditor(this@MainActivity, WidgetStyle(), "Novo relógio", "Criar relógio", store.clockId, "") { style, name, dialog ->
                     dialog.dismiss()
-                    if (!ClockWidgetProvider.requestPin(this@MainActivity, style)) {
+                    val id = Clocks.create(this@MainActivity, name.ifEmpty { "Relógio ${Clocks.ids(this@MainActivity).size + 1}" }, style)
+                    Clocks.setActive(this@MainActivity, id)
+                    refresh()
+                    selectTab(0)
+                    if (!ClockWidgetProvider.requestPin(this@MainActivity, id)) {
                         Snackbar.make(
                             findViewById(R.id.root),
-                            "Segure a tela inicial › Widgets › Hora da Escola",
+                            "Segure a tela inicial › Widgets › Clock",
                             Snackbar.LENGTH_LONG
                         ).setAnchorView(nav).show()
                     }
@@ -313,24 +319,57 @@ class MainActivity : AppCompatActivity() {
     private fun renderWidgetList() {
         val list = findViewById<LinearLayout>(R.id.widgetList)
         list.removeAllViews()
-        ClockWidgetProvider.widgetIds(this).forEachIndexed { index, id ->
-            val style = WidgetStyles.load(this, id)
+        val active = Clocks.active(this)
+        for (id in Clocks.ids(this)) {
+            val clockStore = ClockStore(this, id)
+            val style = Clocks.style(this, id)
+            val name = Clocks.name(this, id)
             val item = LayoutInflater.from(this).inflate(R.layout.item_widget, list, false)
-            WidgetPreview.bind(item.findViewById(R.id.itemPreview), style, store)
-            item.findViewById<TextView>(R.id.itemTitle).text = "Widget ${index + 1}"
-            item.findViewById<TextView>(R.id.itemSubtitle).text = if (style.showLegend) "com legenda" else "sem legenda"
+            WidgetPreview.bind(item.findViewById(R.id.itemPreview), style, clockStore)
+            item.findViewById<TextView>(R.id.itemTitle).text = if (id == active) "$name  ●" else name
+            val widgets = ClockWidgetProvider.widgetsOf(this, id).size
+            item.findViewById<TextView>(R.id.itemSubtitle).text =
+                ClockOffset.status(clockStore.offsetMillis, clockStore.isCalibrated) +
+                    if (widgets > 0) " · $widgets na tela" else ""
             item.pressable(0.98f)
+            // Tocar abre o relógio na Home para calibrar.
             item.setOnClickListener {
-                Sheets.widgetEditor(this, style, "Widget ${index + 1}", "Salvar") { newStyle, dialog ->
-                    WidgetStyles.save(this, id, newStyle)
-                    ClockWidgetProvider.updateWidget(this, id)
-                    dialog.dismiss()
+                it.tick()
+                Clocks.setActive(this, id)
+                refresh()
+                selectTab(0)
+            }
+            item.setOnLongClickListener {
+                if (Clocks.ids(this).size > 1) {
+                    androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("Excluir \"$name\"?")
+                        .setMessage("Widgets dele passam a mostrar o primeiro relógio.")
+                        .setNegativeButton("Cancelar", null)
+                        .setPositiveButton("Excluir") { _, _ ->
+                            Clocks.delete(this, id)
+                            ClockWidgetProvider.updateAllWidgets(this)
+                            refresh()
+                        }
+                        .show()
                 }
+                true
+            }
+            item.findViewById<View>(R.id.itemEdit).setOnClickListener {
+                Sheets.widgetEditor(this, style, name, "Salvar", id, name) { newStyle, newName, dialog ->
+                    Clocks.saveStyle(this, id, newStyle)
+                    if (newName.isNotEmpty()) Clocks.rename(this, id, newName)
+                    for (w in ClockWidgetProvider.widgetsOf(this, id)) WidgetStyles.clearLegacy(this, w)
+                    ClockWidgetProvider.updateAllWidgets(this)
+                    dialog.dismiss()
+                    refresh()
+                }
+            }
+            item.findViewById<View>(R.id.itemPin).setOnClickListener {
+                if (!ClockWidgetProvider.requestPin(this, id)) snack("Segure a tela inicial › Widgets › Clock")
             }
             list.addView(item)
         }
     }
-
     // ---------- Código ----------
 
     private fun setupCode() {
@@ -390,7 +429,7 @@ class MainActivity : AppCompatActivity() {
         if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
         val code = CalibrationCode.encode(store.offsetMillis)
         val send = Intent(Intent.ACTION_SEND).setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, "Código do Hora da Escola: $code")
+            .putExtra(Intent.EXTRA_TEXT, "Código do Clock: $code")
         startActivity(Intent.createChooser(send, "Enviar código"))
     }
 

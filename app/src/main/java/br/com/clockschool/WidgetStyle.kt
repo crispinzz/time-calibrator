@@ -2,26 +2,28 @@ package br.com.clockschool
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Bundle
 
 /**
- * Aparência de um widget. Cor null significa "automático": segue o claro/escuro do sistema.
+ * Aparência de um relógio nos widgets. Cor null significa "automático": segue o claro/escuro do sistema.
  */
 data class WidgetStyle(
     val background: Int? = null,
     val text: Int? = null,
     val opacity: Int = 100,
     val showLegend: Boolean = true,
-    val legendText: String = ""
+    val legendText: String = "",
+    val showDelay: Boolean = true
 ) {
 
     fun backgroundFor(night: Boolean): Int = background ?: if (night) AUTO_DARK_BG else AUTO_LIGHT_BG
 
     fun textFor(night: Boolean): Int = text ?: if (night) AUTO_DARK_TEXT else AUTO_LIGHT_TEXT
 
-    fun legendFor(status: String): String = legendText.trim().ifEmpty { status }
-
-    fun toBundle() = Bundle().apply { putString(KEY_ENCODED, encode()) }
+    /** Legenda: texto livre e/ou o atraso. Vazio quando não há nada para mostrar. */
+    fun legendFor(status: String): String {
+        val parts = listOfNotNull(legendText.trim().ifEmpty { null }, status.takeIf { showDelay })
+        return parts.joinToString(" · ")
+    }
 
     fun encode(): String = listOf(
         VERSION,
@@ -29,14 +31,14 @@ data class WidgetStyle(
         text?.let { Integer.toHexString(it) } ?: AUTO,
         opacity.toString(),
         if (showLegend) "1" else "0",
+        if (showDelay) "1" else "0",
         legendText
     ).joinToString(SEPARATOR)
 
     companion object {
-        private const val VERSION = "1"
+        private const val VERSION = "2"
         private const val AUTO = "auto"
         private const val SEPARATOR = "|"
-        private const val KEY_ENCODED = "widget_style"
 
         const val AUTO_LIGHT_BG = Color.WHITE
         const val AUTO_DARK_BG = 0xFF0A0A0A.toInt()
@@ -58,52 +60,63 @@ data class WidgetStyle(
             0xFFFF8FA3.toInt()
         )
 
+        private fun color(raw: String): Int? = raw.takeIf { it != AUTO }?.let { it.toLong(16).toInt() }
+
         fun decode(encoded: String?): WidgetStyle? {
-            val parts = encoded?.split(SEPARATOR, limit = 6) ?: return null
-            if (parts.size < 6 || parts[0] != VERSION) return null
+            if (encoded == null) return null
             return try {
-                WidgetStyle(
-                    background = parts[1].takeIf { it != AUTO }?.let { it.toLong(16).toInt() },
-                    text = parts[2].takeIf { it != AUTO }?.let { it.toLong(16).toInt() },
-                    opacity = parts[3].toInt().coerceIn(0, 100),
-                    showLegend = parts[4] == "1",
-                    legendText = parts[5].take(LEGEND_MAX)
-                )
+                when {
+                    encoded.startsWith("2$SEPARATOR") -> {
+                        val p = encoded.split(SEPARATOR, limit = 7)
+                        if (p.size < 7) return null
+                        WidgetStyle(color(p[1]), color(p[2]), p[3].toInt().coerceIn(0, 100), p[4] == "1", p[6].take(LEGEND_MAX), p[5] == "1")
+                    }
+                    encoded.startsWith("1$SEPARATOR") -> {
+                        val p = encoded.split(SEPARATOR, limit = 6)
+                        if (p.size < 6) return null
+                        WidgetStyle(color(p[1]), color(p[2]), p[3].toInt().coerceIn(0, 100), p[4] == "1", p[5].take(LEGEND_MAX))
+                    }
+                    else -> null
+                }
             } catch (e: NumberFormatException) {
                 null
             }
         }
-
-        fun fromBundle(bundle: Bundle?): WidgetStyle? = decode(bundle?.getString(KEY_ENCODED))
     }
 }
 
-/** Estilos guardados por appWidgetId. */
+/** Estilo efetivo de cada widget da tela inicial. */
 object WidgetStyles {
 
-    private fun key(appWidgetId: Int) = "widget_style_$appWidgetId"
+    private fun legacyKey(appWidgetId: Int) = "widget_style_$appWidgetId"
 
-    fun load(context: Context, appWidgetId: Int): WidgetStyle {
-        val prefs = Prefs.of(context)
-        WidgetStyle.decode(prefs.getString(key(appWidgetId), null))?.let { return it }
-        return when (prefs.getInt(Prefs.LEGACY_WIDGET_THEME, ThemeMode.SYSTEM)) {
+    fun legacyDefault(context: Context): WidgetStyle =
+        when (Prefs.of(context).getInt(Prefs.LEGACY_WIDGET_THEME, ThemeMode.SYSTEM)) {
             ThemeMode.LIGHT -> WidgetStyle(WidgetStyle.AUTO_LIGHT_BG, WidgetStyle.AUTO_LIGHT_TEXT)
             ThemeMode.DARK -> WidgetStyle(WidgetStyle.AUTO_DARK_BG, WidgetStyle.AUTO_DARK_TEXT)
             else -> WidgetStyle()
         }
-    }
 
-    fun save(context: Context, appWidgetId: Int, style: WidgetStyle) {
-        Prefs.of(context).edit().putString(key(appWidgetId), style.encode()).apply()
+    /** Widgets antigos guardavam estilo próprio; os novos seguem o do relógio. */
+    fun load(context: Context, appWidgetId: Int): WidgetStyle =
+        WidgetStyle.decode(Prefs.of(context).getString(legacyKey(appWidgetId), null))
+            ?: Clocks.style(context, Clocks.forWidget(context, appWidgetId))
+
+    fun clearLegacy(context: Context, appWidgetId: Int) {
+        Prefs.of(context).edit().remove(legacyKey(appWidgetId)).apply()
     }
 
     fun delete(context: Context, appWidgetId: Int) {
-        Prefs.of(context).edit().remove(key(appWidgetId)).apply()
+        clearLegacy(context, appWidgetId)
+        Clocks.unbindWidget(context, appWidgetId)
     }
 
     fun move(context: Context, oldId: Int, newId: Int) {
+        Clocks.bindWidget(context, newId, Clocks.forWidget(context, oldId))
         val prefs = Prefs.of(context)
-        val encoded = prefs.getString(key(oldId), null) ?: return
-        prefs.edit().remove(key(oldId)).putString(key(newId), encoded).apply()
+        prefs.getString(legacyKey(oldId), null)?.let {
+            prefs.edit().putString(legacyKey(newId), it).apply()
+        }
+        delete(context, oldId)
     }
 }

@@ -10,8 +10,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import br.com.clockschool.ClockOffset
 
 /**
- * Mostra a hora da escola com precisão de segundo. O próximo tique é agendado para a
- * virada exata do segundo da escola, então a troca acontece junto com o sinal.
+ * Mostra a hora corrigida com precisão de segundo. O próximo tique é agendado para a
+ * virada exata do segundo corrigido, então a troca acontece junto com o sinal.
  */
 class LiveClockView @JvmOverloads constructor(
     context: Context,

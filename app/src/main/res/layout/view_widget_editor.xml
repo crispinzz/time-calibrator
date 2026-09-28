@@ -20,6 +20,22 @@
         android:text="Aparência"
         android:textSize="26sp" />
 
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_field"
+        android:hint="Nome do relógio"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLength="28"
+        android:maxLines="1"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:textColor="@color/text_primary"
+        android:textSize="17sp" />
+
     <include
         android:id="@+id/editorPreview"
         layout="@layout/view_widget_preview"
@@ -209,6 +225,40 @@
         android:paddingEnd="22dp"
         android:textColor="@color/text_primary"
         android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mostrar atraso?"
+                android:textSize="16sp" />
+
+            <TextView
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Ex.: 3 min 30 s atrasado" />
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/delaySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/editorPrimary"

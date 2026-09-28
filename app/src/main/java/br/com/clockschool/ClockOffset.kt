@@ -20,10 +20,10 @@ object ClockOffset {
         return value
     }
 
-    /** Hora da escola agora, em milissegundos de época. */
+    /** Hora corrigida agora, em milissegundos de época. */
     fun schoolNow(offsetMillis: Long, now: Long = System.currentTimeMillis()): Long = now - offsetMillis
 
-    /** Milissegundos desde a meia-noite local da hora da escola. */
+    /** Milissegundos desde a meia-noite local da hora corrigida. */
     fun millisOfDay(schoolMillis: Long): Long {
         val cal = Calendar.getInstance().apply { timeInMillis = schoolMillis }
         return cal.get(Calendar.HOUR_OF_DAY) * 3_600_000L +
@@ -73,7 +73,7 @@ object ClockOffset {
     fun status(offsetMillis: Long, calibrated: Boolean): String = when {
         !calibrated -> "não calibrado"
         offsetMillis / 1000 == 0L -> "sincronizado"
-        offsetMillis > 0 -> "${formatHuman(offsetMillis)} atrasada"
-        else -> "${formatHuman(offsetMillis)} adiantada"
+        offsetMillis > 0 -> "${formatHuman(offsetMillis)} atrasado"
+        else -> "${formatHuman(offsetMillis)} adiantado"
     }
 }

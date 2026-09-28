@@ -22,12 +22,13 @@
             android:paddingBottom="8dp">
 
             <TextView
-                style="@style/Text.Label"
+                android:id="@+id/clockName"
+                style="@style/Text.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/app_name"
-                android:textSize="15sp" />
+                android:ellipsize="end"
+                android:maxLines="1" />
 
             <ImageView
                 android:id="@+id/themeButton"
@@ -402,7 +403,7 @@
                                     style="@style/Text.Title"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Widgets"
+                                    android:text="Relógios"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -440,7 +441,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Cores e legenda do seu jeito"
+                                android:text="Cada um com sua calibração"
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -469,21 +470,21 @@
                         style="@style/Text.Eyebrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Widgets" />
+                        android:text="Relógios" />
 
                     <TextView
                         style="@style/Text.Display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Do seu jeito,\nna tela inicial" />
+                        android:text="Seus relógios" />
 
                     <TextView
                         style="@style/Text.Body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Cada widget tem cor de fundo, cor do texto e legenda próprias." />
+                        android:text="Cada relógio tem nome, calibração e aparência próprios. Toque para abrir, segure para excluir." />
 
                     <LinearLayout
                         android:id="@+id/widgetList"
@@ -524,7 +525,7 @@
                                 style="@style/Text.Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Novo widget"
+                                android:text="Novo relógio"
                                 android:textSize="17sp" />
 
                             <TextView
@@ -532,7 +533,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Escolha as cores e adicione" />
+                                android:text="Dê um nome e calibre" />
                         </LinearLayout>
 
                         <ImageView

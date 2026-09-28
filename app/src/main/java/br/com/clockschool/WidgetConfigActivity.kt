@@ -43,9 +43,12 @@ class WidgetConfigActivity : AppCompatActivity() {
             insets
         }
 
-        WidgetEditor(editor, WidgetStyles.load(this, id), "Personalizar widget", "Salvar") { style ->
-            WidgetStyles.save(this, id, style)
-            ClockWidgetProvider.updateWidget(this, id)
+        val clockId = Clocks.forWidget(this, id)
+        WidgetEditor(editor, WidgetStyles.load(this, id), "Personalizar widget", "Salvar", clockId, Clocks.name(this, clockId)) { style, name ->
+            Clocks.saveStyle(this, clockId, style)
+            if (name.isNotEmpty()) Clocks.rename(this, clockId, name)
+            WidgetStyles.clearLegacy(this, id)
+            ClockWidgetProvider.updateAllWidgets(this)
             setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id))
             finish()
         }

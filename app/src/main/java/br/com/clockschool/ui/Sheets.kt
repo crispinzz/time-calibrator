@@ -38,7 +38,7 @@ object Sheets {
             setValue(minute, animate = false)
         }
 
-        // Sugestões: as marcas de 5 min mais próximas da hora da escola agora.
+        // Sugestões: as marcas de 5 min mais próximas da hora corrigida agora.
         val cal = Calendar.getInstance().apply {
             timeInMillis = ClockOffset.schoolNow(ClockStore(activity).offsetMillis)
         }
@@ -113,7 +113,9 @@ object Sheets {
         initial: WidgetStyle,
         eyebrow: String,
         primaryLabel: String,
-        onPrimary: (WidgetStyle, BottomSheetDialog) -> Unit
+        clockId: Int,
+        name: String,
+        onPrimary: (WidgetStyle, String, BottomSheetDialog) -> Unit
     ) {
         val editor = LayoutInflater.from(activity).inflate(R.layout.view_widget_editor, null)
         val scroll = NestedScrollView(activity).apply {
@@ -129,7 +131,7 @@ object Sheets {
             addView(column)
         }
         lateinit var dialog: BottomSheetDialog
-        WidgetEditor(editor, initial, eyebrow, primaryLabel) { style -> onPrimary(style, dialog) }
+        WidgetEditor(editor, initial, eyebrow, primaryLabel, clockId, name) { style, newName -> onPrimary(style, newName, dialog) }
         dialog = sheet(activity, scroll)
         dialog.show()
     }

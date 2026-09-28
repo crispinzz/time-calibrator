@@ -35,8 +35,9 @@ object WidgetPreview {
             offsetMillis = store.offsetMillis
         }
         preview.findViewById<TextView>(R.id.previewLegend).apply {
-            visibility = if (style.showLegend) View.VISIBLE else View.GONE
-            this.text = style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
+            val legend = style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
+            visibility = if (style.showLegend && legend.isNotEmpty()) View.VISIBLE else View.GONE
+            this.text = legend
             setTextColor(text)
             backgroundTintList = ColorStateList.valueOf(ColorUtils.setAlphaComponent(text, 26))
         }
@@ -49,12 +50,15 @@ class WidgetEditor(
     initial: WidgetStyle,
     eyebrow: String,
     primaryLabel: String,
-    private val onPrimary: (WidgetStyle) -> Unit
+    clockId: Int,
+    initialName: String?,
+    private val onPrimary: (WidgetStyle, String) -> Unit
 ) {
     var style = initial
         private set
 
-    private val store = ClockStore(root.context)
+    private val store = ClockStore(root.context, clockId)
+    private val nameInput = root.findViewById<EditText>(R.id.nameInput)
     private val preview = root.findViewById<View>(R.id.editorPreview)
     private val bgRow = root.findViewById<LinearLayout>(R.id.bgSwatches)
     private val textRow = root.findViewById<LinearLayout>(R.id.textSwatches)
@@ -72,6 +76,14 @@ class WidgetEditor(
 
     init {
         root.findViewById<TextView>(R.id.editorEyebrow).text = eyebrow
+        if (initialName == null) nameInput.visibility = View.GONE else nameInput.setText(initialName)
+
+        val delaySwitch = root.findViewById<MaterialSwitch>(R.id.delaySwitch)
+        delaySwitch.isChecked = style.showDelay
+        delaySwitch.setOnCheckedChangeListener { _, checked ->
+            style = style.copy(showDelay = checked)
+            render()
+        }
 
         val slider = root.findViewById<Slider>(R.id.opacitySlider)
         slider.value = (style.opacity / 5 * 5).toFloat()
@@ -93,7 +105,7 @@ class WidgetEditor(
 
         legendInput.filters = arrayOf(InputFilter.LengthFilter(WidgetStyle.LEGEND_MAX))
         legendInput.setText(style.legendText)
-        legendInput.hint = "Automático · " + ClockOffset.status(store.offsetMillis, store.isCalibrated)
+        legendInput.hint = "Texto opcional"
         legendInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
@@ -108,7 +120,7 @@ class WidgetEditor(
             pressable()
             setOnClickListener {
                 it.confirm()
-                onPrimary(style)
+                onPrimary(style, nameInput.text.toString().trim())
             }
         }
         render()

@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.RemoteViews
 
 /**
- * O horário do widget é um Chronometer cuja base é "meia-noite da escola" no relógio
+ * O horário do widget é um Chronometer cuja base é "meia-noite corrigida" no relógio
  * monotônico. O launcher faz o tique a cada segundo sozinho, com precisão de segundo
  * (o antigo TextClock só aceitava ajustes em minutos inteiros).
  *
@@ -42,10 +42,8 @@ class ClockWidgetProvider : AppWidgetProvider() {
         when (intent.action) {
             ACTION_PINNED -> {
                 val id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-                val style = WidgetStyle.fromBundle(intent.getBundleExtra(EXTRA_STYLE))
-                if (id != AppWidgetManager.INVALID_APPWIDGET_ID && style != null) {
-                    WidgetStyles.save(context, id, style)
-                }
+                val clockId = intent.getIntExtra(EXTRA_CLOCK, 0)
+                if (id != AppWidgetManager.INVALID_APPWIDGET_ID) Clocks.bindWidget(context, id, clockId)
                 updateAllWidgets(context)
             }
             ACTION_TRANSITION,
@@ -73,7 +71,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
 
         const val ACTION_PINNED = "br.com.clockschool.action.WIDGET_PINNED"
         private const val ACTION_TRANSITION = "br.com.clockschool.action.CLOCK_TRANSITION"
-        private const val EXTRA_STYLE = "br.com.clockschool.extra.STYLE"
+        private const val EXTRA_CLOCK = "br.com.clockschool.extra.CLOCK"
 
         private const val HOUR = 3_600_000L
         private val TRANSITIONS = longArrayOf(1 * HOUR, 10 * HOUR, 24 * HOUR)
@@ -88,28 +86,31 @@ class ClockWidgetProvider : AppWidgetProvider() {
             scheduleNextTransition(context)
         }
 
+        fun widgetsOf(context: Context, clockId: Int): List<Int> =
+            widgetIds(context).filter { Clocks.forWidget(context, it) == clockId }
+
         fun updateWidget(context: Context, appWidgetId: Int) {
             render(context, AppWidgetManager.getInstance(context), appWidgetId)
         }
 
         /** Pede ao launcher para fixar um widget novo já com o estilo escolhido no app. */
-        fun requestPin(context: Context, style: WidgetStyle): Boolean {
+        fun requestPin(context: Context, clockId: Int): Boolean {
             val manager = AppWidgetManager.getInstance(context)
             if (!manager.isRequestPinAppWidgetSupported) return false
             val callback = Intent(context, ClockWidgetProvider::class.java)
                 .setAction(ACTION_PINNED)
-                .putExtra(EXTRA_STYLE, style.toBundle())
+                .putExtra(EXTRA_CLOCK, clockId)
             // Mutável para o sistema preencher o EXTRA_APPWIDGET_ID do widget criado.
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
-            val pending = PendingIntent.getBroadcast(context, style.hashCode(), callback, flags)
+            val pending = PendingIntent.getBroadcast(context, 100 + clockId, callback, flags)
             return manager.requestPinAppWidget(
                 ComponentName(context, ClockWidgetProvider::class.java), null, pending
             )
         }
 
         private fun render(context: Context, manager: AppWidgetManager, appWidgetId: Int) {
-            val store = ClockStore(context)
+            val store = ClockStore(context, Clocks.forWidget(context, appWidgetId))
             val style = WidgetStyles.load(context, appWidgetId)
             val views = RemoteViews(context.packageName, R.layout.widget_clock)
 
@@ -125,12 +126,10 @@ class ClockWidgetProvider : AppWidgetProvider() {
 
             val options = manager.getAppWidgetOptions(appWidgetId)
             val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110)
-            val legendVisible = style.showLegend && minHeight >= 72
+            val legend = style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
+            val legendVisible = style.showLegend && legend.isNotEmpty() && minHeight >= 72
             views.setViewVisibility(R.id.widgetLegend, if (legendVisible) View.VISIBLE else View.GONE)
-            views.setTextViewText(
-                R.id.widgetLegendText,
-                style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
-            )
+            views.setTextViewText(R.id.widgetLegendText, legend)
 
             val open = Intent(context, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -180,10 +179,13 @@ class ClockWidgetProvider : AppWidgetProvider() {
                 return
             }
             val now = System.currentTimeMillis()
-            val msOfDay = ClockOffset.millisOfDay(ClockOffset.schoolNow(ClockStore(context).offsetMillis, now))
-            val boundary = TRANSITIONS.first { it > msOfDay }
+            // A próxima virada entre todos os relógios em uso.
+            val triggerAt = widgetIds(context).map { Clocks.forWidget(context, it) }.distinct().minOf { clockId ->
+                val msOfDay = ClockOffset.millisOfDay(ClockOffset.schoolNow(ClockStore(context, clockId).offsetMillis, now))
+                now + (TRANSITIONS.first { it > msOfDay } - msOfDay) + 20
+            }
             // Folga mínima para já estarmos do outro lado da virada quando o alarme chegar.
-            val triggerAt = now + (boundary - msOfDay) + 20
+            
 
             val canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
             try {
