@@ -1,0 +1,33 @@
+<resources>
+    <color name="screen_bg">#0E0E11</color>
+    <color name="frame_bg">#17171B</color>
+    <color name="frame_stroke">#26262E</color>
+    <color name="card_bg">#1C1C22</color>
+    <color name="pill_action_bg">#1F1F26</color>
+    <color name="pill_action_stroke">#2E2E38</color>
+    <color name="icon_circle_stroke">#3A3A46</color>
+    <color name="field_bg">#1F1F26</color>
+    <color name="field_stroke">#33333E</color>
+    <color name="divider">#2A2A33</color>
+
+    <color name="text_primary">#F4F4F7</color>
+    <color name="text_secondary">#9A9AB0</color>
+    <color name="text_muted">#83839A</color>
+    <color name="icon_stroke">#A5A5C8</color>
+    <color name="icon_stroke_soft">#8E8EA8</color>
+
+    <color name="widget_card">#000000</color>
+    <color name="widget_stroke">#262626</color>
+    <color name="widget_text">#FFFFFF</color>
+    <color name="widget_pill_bg">#1A1A1A</color>
+    <color name="widget_pill_text">#B4B4B4</color>
+
+    <color name="pill_neutral_bg">#26262E</color>
+    <color name="pill_neutral_text">#A0A0B0</color>
+    <color name="pill_success_bg">#17331F</color>
+    <color name="pill_success_text">#5FD08A</color>
+    <color name="pill_warning_bg">#332612</color>
+    <color name="pill_warning_text">#E0A94B</color>
+    <color name="pill_info_bg">#18243D</color>
+    <color name="pill_info_text">#7FA6F0</color>
+</resources>

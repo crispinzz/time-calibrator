@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.ClockSchool" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#4C63D2</item>
+        <item name="colorPrimaryDark">#3A4EB0</item>
+        <item name="colorAccent">#4C63D2</item>
+        <item name="android:windowBackground">@color/screen_bg</item>
+    </style>
+</resources>
