@@ -43,6 +43,7 @@ class WidgetConfigActivity : AppCompatActivity() {
             insets
         }
 
+        Clocks.claimPending(this, intArrayOf(id))
         val clockId = Clocks.forWidget(this, id)
         WidgetEditor(editor, WidgetStyles.load(this, id), "Personalizar widget", "Salvar", clockId, Clocks.name(this, clockId)) { style, name ->
             Clocks.saveStyle(this, clockId, style)

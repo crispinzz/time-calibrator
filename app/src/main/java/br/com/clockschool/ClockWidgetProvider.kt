@@ -25,6 +25,7 @@ import android.widget.RemoteViews
 class ClockWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        Clocks.claimPending(context, appWidgetIds)
         for (id in appWidgetIds) render(context, appWidgetManager, id)
         scheduleNextTransition(context)
     }
@@ -35,6 +36,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
         appWidgetId: Int,
         newOptions: Bundle
     ) {
+        if (Clocks.claimPending(context, intArrayOf(appWidgetId))) scheduleNextTransition(context)
         render(context, appWidgetManager, appWidgetId)
     }
 
@@ -43,7 +45,10 @@ class ClockWidgetProvider : AppWidgetProvider() {
             ACTION_PINNED -> {
                 val id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
                 val clockId = intent.getIntExtra(EXTRA_CLOCK, 0)
-                if (id != AppWidgetManager.INVALID_APPWIDGET_ID) Clocks.bindWidget(context, id, clockId)
+                if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                    Clocks.bindWidget(context, id, clockId)
+                    Clocks.clearPending(context)
+                }
                 updateAllWidgets(context)
             }
             ACTION_TRANSITION,
@@ -97,6 +102,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
         fun requestPin(context: Context, clockId: Int): Boolean {
             val manager = AppWidgetManager.getInstance(context)
             if (!manager.isRequestPinAppWidgetSupported) return false
+            Clocks.setPendingPin(context, clockId, widgetIds(context))
             val callback = Intent(context, ClockWidgetProvider::class.java)
                 .setAction(ACTION_PINNED)
                 .putExtra(EXTRA_CLOCK, clockId)

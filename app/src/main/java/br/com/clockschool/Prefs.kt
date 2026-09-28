@@ -88,6 +88,40 @@ object Clocks {
         Prefs.of(context).edit().putInt(widgetKey(appWidgetId), clockId).commit()
     }
 
+    /**
+     * Alguns launchers não entregam o callback de fixação. Guardamos qual relógio foi pedido e
+     * quais widgets já existiam; o primeiro widget novo que aparecer fica com esse relógio.
+     */
+    fun setPendingPin(context: Context, clockId: Int, existing: IntArray) {
+        Prefs.of(context).edit()
+            .putInt(PENDING, clockId)
+            .putString(PENDING_KNOWN, existing.joinToString(","))
+            .putLong(PENDING_AT, System.currentTimeMillis())
+            .commit()
+    }
+
+    fun claimPending(context: Context, appWidgetIds: IntArray): Boolean {
+        val prefs = Prefs.of(context)
+        if (!prefs.contains(PENDING)) return false
+        if (System.currentTimeMillis() - prefs.getLong(PENDING_AT, 0) > 10 * 60_000L) {
+            clearPending(context)
+            return false
+        }
+        val known = prefs.getString(PENDING_KNOWN, "").orEmpty().split(',').mapNotNull { it.toIntOrNull() }.toSet()
+        val fresh = appWidgetIds.firstOrNull { it !in known && !prefs.contains(widgetKey(it)) } ?: return false
+        bindWidget(context, fresh, prefs.getInt(PENDING, 0))
+        clearPending(context)
+        return true
+    }
+
+    fun clearPending(context: Context) {
+        Prefs.of(context).edit().remove(PENDING).remove(PENDING_KNOWN).remove(PENDING_AT).commit()
+    }
+
+    private const val PENDING = "pin_pending_clock"
+    private const val PENDING_KNOWN = "pin_pending_known"
+    private const val PENDING_AT = "pin_pending_at"
+
     fun unbindWidget(context: Context, appWidgetId: Int) {
         Prefs.of(context).edit().remove(widgetKey(appWidgetId)).apply()
     }
