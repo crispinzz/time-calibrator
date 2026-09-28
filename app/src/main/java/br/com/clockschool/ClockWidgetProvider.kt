@@ -127,7 +127,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
             val options = manager.getAppWidgetOptions(appWidgetId)
             val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110)
             val legend = style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
-            val legendVisible = style.showLegend && legend.isNotEmpty() && minHeight >= 72
+            val legendVisible = style.showLegend && legend.isNotEmpty() && minHeight >= 40
             views.setViewVisibility(R.id.widgetLegend, if (legendVisible) View.VISIBLE else View.GONE)
             views.setTextViewText(R.id.widgetLegendText, legend)
 

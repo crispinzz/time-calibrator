@@ -186,6 +186,11 @@ class MainActivity : AppCompatActivity() {
             pressable(0.9f)
             setOnClickListener { changeOffset(0L, false, "Ajuste zerado") }
         }
+        findViewById<View>(R.id.homeApply).apply {
+            pressable(0.97f)
+            setOnClickListener { applyWidget(store.clockId) }
+        }
+        findViewById<View>(R.id.homePreview).setOnClickListener { selectTab(1) }
         findViewById<View>(R.id.calibrateButton).apply {
             pressable(0.97f)
             setOnClickListener { calibrate() }
@@ -264,7 +269,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.quickSchedule).text = scheduled
         findViewById<TextView>(R.id.scheduleChip).text = scheduled
         findViewById<TextView>(R.id.calibrateHint).text =
-            "Toque no instante em que o sinal das $scheduled tocar."
+            "Toque em Calibrar no instante em que o sinal das $scheduled tocar."
 
         findViewById<TextView>(R.id.statusText).text =
             ClockOffset.status(offset, calibrated).replaceFirstChar { it.uppercase() }
@@ -289,7 +294,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.widgetsBadge).text = Clocks.ids(this).size.toString()
+
+        WidgetPreview.bind(findViewById(R.id.homePreview), Clocks.style(this, store.clockId), store)
+        val applied = ClockWidgetProvider.widgetsOf(this, store.clockId).isNotEmpty()
+        findViewById<TextView>(R.id.homeApply).apply {
+            text = if (applied) "Widget aplicado" else "Aplicar widget"
+            isEnabled = !applied
+            setBackgroundResource(if (applied) R.drawable.bg_pill_muted else R.drawable.bg_button_primary)
+            setTextColor(color(if (applied) R.color.text_secondary else R.color.on_accent))
+        }
+
         if (tab == 1) renderWidgetList()
+    }
+
+    private fun applyWidget(clockId: Int) {
+        if (ClockWidgetProvider.widgetsOf(this, clockId).isNotEmpty()) {
+            snack("Este relógio já tem um widget na tela")
+            return
+        }
+        if (!ClockWidgetProvider.requestPin(this, clockId)) snack("Segure a tela inicial › Widgets › Clock")
     }
 
     // ---------- Widgets ----------
@@ -304,13 +327,7 @@ class MainActivity : AppCompatActivity() {
                     Clocks.setActive(this@MainActivity, id)
                     refresh()
                     selectTab(0)
-                    if (!ClockWidgetProvider.requestPin(this@MainActivity, id)) {
-                        Snackbar.make(
-                            findViewById(R.id.root),
-                            "Segure a tela inicial › Widgets › Clock",
-                            Snackbar.LENGTH_LONG
-                        ).setAnchorView(nav).show()
-                    }
+                    applyWidget(id)
                 }
             }
         }
@@ -364,8 +381,10 @@ class MainActivity : AppCompatActivity() {
                     refresh()
                 }
             }
-            item.findViewById<View>(R.id.itemPin).setOnClickListener {
-                if (!ClockWidgetProvider.requestPin(this, id)) snack("Segure a tela inicial › Widgets › Clock")
+            // Um widget por relógio: o + some quando ele já está na tela.
+            item.findViewById<View>(R.id.itemPin).apply {
+                visibility = if (widgets > 0) View.GONE else View.VISIBLE
+                setOnClickListener { applyWidget(id) }
             }
             list.addView(item)
         }

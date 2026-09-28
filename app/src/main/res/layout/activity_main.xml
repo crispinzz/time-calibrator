@@ -246,7 +246,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Calibrar" />
+                                android:text="Calibração" />
 
                             <TextView
                                 android:id="@+id/scheduleChip"
@@ -295,7 +295,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="sans-serif-medium"
                                 android:gravity="center"
-                                android:text="Tocou agora"
+                                android:text="Calibrar"
                                 android:textColor="@color/on_accent"
                                 android:textSize="16sp" />
 
@@ -303,6 +303,28 @@
                                 android:layout_width="44dp"
                                 android:layout_height="1dp" />
                         </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Widget deste relógio: prévia idêntica ao da tela inicial -->
+                    <LinearLayout
+                        style="@style/Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <include
+                            android:id="@+id/homePreview"
+                            layout="@layout/view_widget_preview" />
+
+                        <TextView
+                            android:id="@+id/homeApply"
+                            style="@style/Button.Primary"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Aplicar widget" />
                     </LinearLayout>
 
                     <!-- Código + Widgets -->

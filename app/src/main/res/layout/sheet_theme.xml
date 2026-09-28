@@ -37,5 +37,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Em cada relógio, escolha o horário do sinal e toque em Tocou agora quando ele tocar. A diferença fica guardada e o app e os widgets mostram a hora certa sozinhos, com precisão de segundo." />
+        android:text="Em cada relógio, escolha o horário do sinal e toque em Calibrar quando ele tocar. A diferença fica guardada e o app e os widgets mostram a hora certa sozinhos, com precisão de segundo." />
 </LinearLayout>
