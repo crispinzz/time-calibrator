@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_shape"
+    android:backgroundTint="@color/widget_card"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:autoSizeMaxTextSize="96sp"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeTextType="uniform"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:letterSpacing="-0.02"
+        android:maxLines="1"
+        android:text="07:42:18"
+        android:textColor="@color/widget_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="12dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="5dp"
+        android:text="hora da escola"
+        android:textColor="@color/widget_text"
+        android:textSize="12sp" />
+
+</LinearLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="140dp"
+    android:background="@drawable/bg_preview_wall"
+    android:padding="18dp">
+
+    <ImageView
+        android:id="@+id/previewBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_shape" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <br.com.clockschool.ui.LiveClockView
+            android:id="@+id/previewTime"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:autoSizeMaxTextSize="56sp"
+            android:autoSizeMinTextSize="14sp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="sans-serif"
+            android:fontFeatureSettings="tnum"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:letterSpacing="-0.02"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/previewLegend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/widget_pill_shape"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:paddingStart="12dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="5dp"
+            android:textSize="12sp" />
+    </LinearLayout>
+</FrameLayout>

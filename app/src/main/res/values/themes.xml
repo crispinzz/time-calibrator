@@ -1,8 +1,133 @@
 <resources>
-    <style name="Theme.ClockSchool" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#4C63D2</item>
-        <item name="colorPrimaryDark">#3A4EB0</item>
-        <item name="colorAccent">#4C63D2</item>
+
+    <style name="Theme.ClockSchool" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">@color/on_accent</item>
+        <item name="colorPrimaryContainer">@color/accent_soft</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorControlHighlight">@color/ripple</item>
+        <item name="android:colorBackground">@color/screen_bg</item>
         <item name="android:windowBackground">@color/screen_bg</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_tertiary</item>
+        <item name="android:textCursorDrawable">@drawable/cursor_accent</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.ClockSchool.Sheet</item>
+    </style>
+
+    <style name="ThemeOverlay.ClockSchool.Sheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.ClockSchool.Sheet</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="Widget.ClockSchool.Sheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="shapeAppearance">@null</item>
+    </style>
+
+    <!-- Tipografia -->
+    <style name="Text" parent="">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text.Eyebrow">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="Text.Display">
+        <item name="android:textSize">34sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:lineSpacingMultiplier">1.05</item>
+    </style>
+
+    <style name="Text.Title">
+        <item name="android:textSize">21sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="Text.Body">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+    </style>
+
+    <style name="Text.Label">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Text.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="Text.Section">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Botões -->
+    <style name="Button.Primary" parent="">
+        <item name="android:layout_height">60dp</item>
+        <item name="android:background">@drawable/bg_button_primary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/on_accent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="CircleButton" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/bg_circle_outline</item>
+        <item name="android:padding">13dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:tint">@color/text_primary</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="QuickCircle" parent="">
+        <item name="android:layout_width">64dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:background">@drawable/bg_circle_surface</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="QuickLabel" parent="Text.Label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="QuickSub" parent="Text.Caption">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="Card" parent="">
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:padding">22dp</item>
     </style>
 </resources>

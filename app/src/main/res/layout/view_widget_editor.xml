@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editorRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/editorEyebrow"
+        style="@style/Text.Eyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp" />
+
+    <TextView
+        style="@style/Text.Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Aparência"
+        android:textSize="26sp" />
+
+    <include
+        android:id="@+id/editorPreview"
+        layout="@layout/view_widget_preview"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="18dp" />
+
+    <TextView
+        style="@style/Text.Section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Fundo" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-6dp"
+        android:layout_marginTop="8dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/bgSwatches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/bgCustom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <br.com.clockschool.ui.ColorPickerView
+            android:id="@+id/bgPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/bgHex"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_field"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="textCapCharacters|textNoSuggestions|textVisiblePassword"
+            android:maxLength="7"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Text.Section"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Opacidade" />
+
+        <TextView
+            android:id="@+id/opacityValue"
+            style="@style/Text.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/opacitySlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stepSize="5"
+        android:valueFrom="0"
+        android:valueTo="100"
+        android:value="100"
+        app:labelBehavior="gone"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+    <TextView
+        style="@style/Text.Section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Texto" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-6dp"
+        android:layout_marginTop="8dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/textSwatches"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/textCustom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <br.com.clockschool.ui.ColorPickerView
+            android:id="@+id/textPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/textHex"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_field"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:importantForAutofill="no"
+            android:inputType="textCapCharacters|textNoSuggestions|textVisiblePassword"
+            android:maxLength="7"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Legenda"
+                android:textSize="16sp" />
+
+            <TextView
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Texto pequeno abaixo da hora" />
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/legendSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/legendInput"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_field"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/editorPrimary"
+        style="@style/Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_marginTop="24dp" />
+</LinearLayout>

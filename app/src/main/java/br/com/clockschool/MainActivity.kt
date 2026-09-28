@@ -1,278 +1,400 @@
 package br.com.clockschool
 
-import android.app.AlertDialog
-import android.appwidget.AppWidgetManager
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.TextClock
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import br.com.clockschool.ui.EMPHASIZED
+import br.com.clockschool.ui.LiveClockView
+import br.com.clockschool.ui.Sheets
+import br.com.clockschool.ui.WidgetPreview
+import br.com.clockschool.ui.color
+import br.com.clockschool.ui.confirm
+import br.com.clockschool.ui.dp
+import br.com.clockschool.ui.pressable
+import br.com.clockschool.ui.pulse
+import br.com.clockschool.ui.reject
+import br.com.clockschool.ui.tick
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import android.view.animation.OvershootInterpolator
+import android.view.ViewGroup.MarginLayoutParams
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var prefs: SharedPreferences
-    private lateinit var correctedTimeText: TextClock
-    private lateinit var statusPill: TextView
-    private lateinit var scheduleChip: TextView
-    private lateinit var calibrationInfoText: TextView
-    private lateinit var codeText: TextView
+    private lateinit var store: ClockStore
+    private lateinit var clock: LiveClockView
+    private lateinit var pages: List<View>
+    private lateinit var navIcons: List<ImageView>
+    private lateinit var nav: View
+    private var tab = 0
 
-    private var scheduledHour = 7
-    private var scheduledMinute = 0
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> refresh() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        prefs = getSharedPreferences(Prefs.NAME, Context.MODE_PRIVATE)
+        store = ClockStore(this)
 
-        correctedTimeText = findViewById(R.id.correctedTimeText)
-        statusPill = findViewById(R.id.statusPill)
-        scheduleChip = findViewById(R.id.scheduleChip)
-        calibrationInfoText = findViewById(R.id.calibrationInfoText)
-        codeText = findViewById(R.id.codeText)
+        clock = findViewById(R.id.schoolClock)
+        clock.secondsColor = color(R.color.text_tertiary)
+        clock.onTick = { updateGreeting(it) }
 
-        scheduledHour = prefs.getInt(Prefs.SCHEDULED_HOUR, 7)
-        scheduledMinute = prefs.getInt(Prefs.SCHEDULED_MINUTE, 0)
-        updateScheduleChip()
+        nav = findViewById(R.id.nav)
+        pages = listOf(findViewById(R.id.pageHome), findViewById(R.id.pageWidgets), findViewById(R.id.pageCode))
+        navIcons = listOf(findViewById(R.id.navHome), findViewById(R.id.navWidgets), findViewById(R.id.navCode))
+        navIcons.forEachIndexed { i, v -> v.setOnClickListener { it.tick(); selectTab(i) } }
 
-        findViewById<View>(R.id.scheduleButton).setOnClickListener { openTimePicker() }
-        findViewById<View>(R.id.calibrateButton).setOnClickListener { calibrateNow() }
-        findViewById<View>(R.id.pinWidgetButton).setOnClickListener { pinWidget() }
-        findViewById<View>(R.id.codeButton).setOnClickListener { openCodeDialog() }
-        findViewById<View>(R.id.copyCodeIcon).setOnClickListener { copyCode() }
-        findViewById<View>(R.id.themeButton).setOnClickListener { openThemeDialog() }
+        applyInsets()
+        setupHome()
+        setupWidgets()
+        setupCode()
 
-        refreshDisplay()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        refreshDisplay()
-    }
-
-    private fun openTimePicker() {
-        val picker = MaterialTimePicker.Builder()
-            .setTimeFormat(TimeFormat.CLOCK_24H)
-            .setHour(scheduledHour)
-            .setMinute(scheduledMinute)
-            .setTitleText("Horário previsto do sinal")
-            .build()
-
-        picker.addOnPositiveButtonClickListener {
-            scheduledHour = picker.hour
-            scheduledMinute = picker.minute
-            prefs.edit()
-                .putInt(Prefs.SCHEDULED_HOUR, scheduledHour)
-                .putInt(Prefs.SCHEDULED_MINUTE, scheduledMinute)
-                .apply()
-            updateScheduleChip()
+        findViewById<View>(R.id.themeButton).apply {
+            pressable(0.9f)
+            setOnClickListener { Sheets.theme(this@MainActivity) { ThemeMode.applyAppTheme(this@MainActivity) } }
         }
 
-        picker.show(supportFragmentManager, "schedule_time_picker")
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (tab != 0) selectTab(0) else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+
+        selectTab(savedInstanceState?.getInt("tab") ?: 0, animate = false)
     }
 
-    private fun updateScheduleChip() {
-        scheduleChip.text = String.format(Locale.getDefault(), "%02d:%02d", scheduledHour, scheduledMinute)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("tab", tab)
     }
 
-    private fun calibrateNow() {
-        val now = Calendar.getInstance()
+    override fun onStart() {
+        super.onStart()
+        Prefs.of(this).registerOnSharedPreferenceChangeListener(prefsListener)
+        refresh()
+    }
+
+    override fun onStop() {
+        Prefs.of(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
+        super.onStop()
+    }
+
+    private fun applyInsets() {
+        val topBar = findViewById<View>(R.id.topBar)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root)) { _, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            topBar.updatePadding(top = bars.top + 12.dp)
+            nav.updateLayoutParams<MarginLayoutParams> { bottomMargin = bars.bottom + 16.dp }
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            pages.forEach { it.updatePadding(bottom = ime) }
+            nav.visibility = if (ime > 0) View.GONE else View.VISIBLE
+            insets
+        }
+    }
+
+    // ---------- Navegação ----------
+
+    private fun selectTab(index: Int, animate: Boolean = true) {
+        val pitch = 64.dp.toFloat()
+        val indicator = findViewById<View>(R.id.navIndicator)
+        if (!animate) {
+            pages.forEachIndexed { i, p -> p.visibility = if (i == index) View.VISIBLE else View.GONE }
+            indicator.translationX = index * pitch
+            navIcons.forEachIndexed { i, v -> v.imageTintList = ColorStateList.valueOf(iconColor(i == index)) }
+            tab = index
+            return
+        }
+        if (index == tab) {
+            (pages[index] as? androidx.core.widget.NestedScrollView)?.smoothScrollTo(0, 0)
+            return
+        }
+        val dir = if (index > tab) 1 else -1
+        val out = pages[tab]
+        val into = pages[index]
+        out.animate().alpha(0f).translationX(-dir * 24f.dp).setDuration(140).withEndAction {
+            out.visibility = View.GONE
+            out.alpha = 1f
+            out.translationX = 0f
+        }.start()
+        into.alpha = 0f
+        into.translationX = dir * 32f.dp
+        into.visibility = View.VISIBLE
+        into.animate().alpha(1f).translationX(0f).setStartDelay(60).setDuration(320).setInterpolator(EMPHASIZED).start()
+
+        indicator.animate().translationX(index * pitch).setDuration(380).setInterpolator(OvershootInterpolator(1.1f)).start()
+        animateTint(navIcons[tab], false)
+        animateTint(navIcons[index], true)
+        tab = index
+        if (index == 1) renderWidgetList()
+    }
+
+    private fun iconColor(active: Boolean) = if (active) color(R.color.on_accent) else color(R.color.nav_icon)
+
+    private fun animateTint(view: ImageView, active: Boolean) {
+        ValueAnimator.ofObject(ArgbEvaluator(), iconColor(!active), iconColor(active)).apply {
+            duration = 240
+            addUpdateListener { view.imageTintList = ColorStateList.valueOf(it.animatedValue as Int) }
+            start()
+        }
+    }
+
+    // ---------- Início ----------
+
+    private fun setupHome() {
+        val openPicker = View.OnClickListener {
+            Sheets.timePicker(this, store.scheduledHour, store.scheduledMinute) { h, m ->
+                store.scheduledHour = h
+                store.scheduledMinute = m
+                refresh()
+            }
+        }
+        findViewById<View>(R.id.quickSchedule).apply { pressable(0.9f); setOnClickListener(openPicker) }
+        findViewById<View>(R.id.scheduleChip).apply { pressable(0.94f); setOnClickListener(openPicker) }
+        findViewById<View>(R.id.quickMinus).apply { pressable(0.9f); setOnClickListener { nudge(+1000) } }
+        findViewById<View>(R.id.quickPlus).apply { pressable(0.9f); setOnClickListener { nudge(-1000) } }
+        findViewById<View>(R.id.quickReset).apply {
+            pressable(0.9f)
+            setOnClickListener { changeOffset(0L, false, "Ajuste zerado") }
+        }
+        findViewById<View>(R.id.calibrateButton).apply {
+            pressable(0.97f)
+            setOnClickListener { calibrate() }
+        }
+        findViewById<View>(R.id.codeCard).apply {
+            clipToOutline = true
+            pressable(0.97f)
+            setOnClickListener { selectTab(2) }
+        }
+        findViewById<View>(R.id.widgetsCard).apply { pressable(0.97f); setOnClickListener { selectTab(1) } }
+    }
+
+    private fun calibrate() {
+        val now = System.currentTimeMillis()
         val scheduled = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, scheduledHour)
-            set(Calendar.MINUTE, scheduledMinute)
+            timeInMillis = now
+            set(Calendar.HOUR_OF_DAY, store.scheduledHour)
+            set(Calendar.MINUTE, store.scheduledMinute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-
-        applyOffset(now.timeInMillis - scheduled.timeInMillis, viaCode = false)
-
-        val offsetMillis = prefs.getLong(Prefs.OFFSET_MILLIS, 0L)
-        val label = if (offsetMillis >= 0) "atrasada" else "adiantada"
-        Toast.makeText(this, "Escola $label ${ClockOffset.formatDuration(offsetMillis)}", Toast.LENGTH_LONG).show()
+        val offset = ClockOffset.normalize(now - scheduled.timeInMillis)
+        changeOffset(offset, false, "Calibrado · " + ClockOffset.status(offset, true))
     }
 
-    private fun applyOffset(offsetMillis: Long, viaCode: Boolean) {
-        prefs.edit()
-            .putLong(Prefs.OFFSET_MILLIS, offsetMillis)
-            .putLong(Prefs.LAST_CALIBRATION_AT, System.currentTimeMillis())
-            .putBoolean(Prefs.CALIBRATED_VIA_CODE, viaCode)
-            .apply()
-
+    private fun nudge(delta: Long) {
+        clock.tick()
+        store.saveCalibration(store.offsetMillis + delta, store.calibratedViaCode)
         ClockWidgetProvider.updateAllWidgets(this)
-        refreshDisplay()
+        refresh()
     }
 
-    private fun refreshDisplay() {
-        val offsetMillis = prefs.getLong(Prefs.OFFSET_MILLIS, 0L)
-        correctedTimeText.timeZone = ClockOffset.shiftedTimeZoneId(offsetMillis)
+    private fun changeOffset(offset: Long, viaCode: Boolean, message: String) {
+        val before = store.snapshot()
+        store.saveCalibration(offset, viaCode)
+        ClockWidgetProvider.updateAllWidgets(this)
+        refresh()
+        clock.confirm()
+        clock.pulse()
+        Snackbar.make(findViewById(R.id.root), message, Snackbar.LENGTH_LONG)
+            .setAnchorView(nav)
+            .setBackgroundTint(color(R.color.inverse_bg))
+            .setTextColor(color(R.color.inverse_text))
+            .setActionTextColor(color(R.color.accent))
+            .setAction("Desfazer") {
+                store.restore(before)
+                ClockWidgetProvider.updateAllWidgets(this)
+                refresh()
+            }
+            .show()
+    }
 
-        val lastCalibration = prefs.getLong(Prefs.LAST_CALIBRATION_AT, -1L)
-        val viaCode = prefs.getBoolean(Prefs.CALIBRATED_VIA_CODE, false)
+    private var greeting = ""
 
-        if (lastCalibration < 0) {
-            codeText.text = "—"
-            calibrationInfoText.text = "nunca calibrado"
+    private fun updateGreeting(school: Long) {
+        val hour = Calendar.getInstance().apply { timeInMillis = school }.get(Calendar.HOUR_OF_DAY)
+        val text = when (hour) {
+            in 5..11 -> "Bom dia"
+            in 12..17 -> "Boa tarde"
+            else -> "Boa noite"
+        }
+        if (text != greeting) {
+            greeting = text
+            findViewById<TextView>(R.id.greetingText).text = text
+        }
+    }
+
+    private fun refresh() {
+        val offset = store.offsetMillis
+        val calibrated = store.isCalibrated
+        clock.offsetMillis = offset
+
+        val scheduled = String.format(Locale.US, "%02d:%02d", store.scheduledHour, store.scheduledMinute)
+        findViewById<TextView>(R.id.quickSchedule).text = scheduled
+        findViewById<TextView>(R.id.scheduleChip).text = scheduled
+        findViewById<TextView>(R.id.calibrateHint).text =
+            "Toque no instante em que o sinal das $scheduled tocar."
+
+        findViewById<TextView>(R.id.statusText).text =
+            ClockOffset.status(offset, calibrated).replaceFirstChar { it.uppercase() }
+        val dot = when {
+            !calibrated -> R.color.status_idle
+            offset / 1000 == 0L -> R.color.status_ok
+            else -> R.color.status_off
+        }
+        findViewById<View>(R.id.statusDot).backgroundTintList = ColorStateList.valueOf(color(dot))
+        findViewById<TextView>(R.id.calibrationInfo).text = if (calibrated) {
+            val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(store.lastCalibrationAt))
+            if (store.calibratedViaCode) "código às $time" else "ajustado às $time"
+        } else ""
+
+        val code = if (calibrated) CalibrationCode.encode(offset) else null
+        findViewById<TextView>(R.id.homeCode).text = code ?: "—"
+        findViewById<TextView>(R.id.codeBig).text = code ?: "—"
+        findViewById<TextView>(R.id.codeHint).text = if (code == null) {
+            "Calibre primeiro para gerar o seu código."
         } else {
-            codeText.text = CalibrationCode.encode(offsetMillis)
-            val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(lastCalibration))
-            calibrationInfoText.text = if (viaCode) "código aplicado às $time" else "calibrado às $time"
+            "Mande para um colega: ele aplica e fica com o mesmo horário, sem precisar calibrar."
         }
 
-        val pillRes: Int
-        val pillColor: Int
-        val pillText: String
-        when {
-            lastCalibration < 0 -> {
-                pillRes = R.drawable.bg_pill_neutral
-                pillColor = R.color.pill_neutral_text
-                pillText = "não calibrado"
-            }
-            offsetMillis == 0L -> {
-                pillRes = R.drawable.bg_pill_success
-                pillColor = R.color.pill_success_text
-                pillText = "sincronizado"
-            }
-            offsetMillis > 0 -> {
-                pillRes = R.drawable.bg_pill_warning
-                pillColor = R.color.pill_warning_text
-                pillText = "atrasada " + ClockOffset.formatDuration(offsetMillis)
-            }
-            else -> {
-                pillRes = R.drawable.bg_pill_info
-                pillColor = R.color.pill_info_text
-                pillText = "adiantada " + ClockOffset.formatDuration(offsetMillis)
-            }
-        }
-        statusPill.setBackgroundResource(pillRes)
-        statusPill.setTextColor(ContextCompat.getColor(this, pillColor))
-        statusPill.text = pillText
+        findViewById<TextView>(R.id.widgetsBadge).text = ClockWidgetProvider.widgetIds(this).size.toString()
+        if (tab == 1) renderWidgetList()
     }
 
-    private fun currentCodeOrNull(): String? {
-        if (prefs.getLong(Prefs.LAST_CALIBRATION_AT, -1L) < 0) return null
-        return CalibrationCode.encode(prefs.getLong(Prefs.OFFSET_MILLIS, 0L))
+    // ---------- Widgets ----------
+
+    private fun setupWidgets() {
+        findViewById<View>(R.id.newWidgetButton).apply {
+            pressable(0.97f)
+            setOnClickListener {
+                Sheets.widgetEditor(this@MainActivity, WidgetStyle(), "Novo widget", "Adicionar à tela inicial") { style, dialog ->
+                    dialog.dismiss()
+                    if (!ClockWidgetProvider.requestPin(this@MainActivity, style)) {
+                        Snackbar.make(
+                            findViewById(R.id.root),
+                            "Segure a tela inicial › Widgets › Hora da Escola",
+                            Snackbar.LENGTH_LONG
+                        ).setAnchorView(nav).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun renderWidgetList() {
+        val list = findViewById<LinearLayout>(R.id.widgetList)
+        list.removeAllViews()
+        ClockWidgetProvider.widgetIds(this).forEachIndexed { index, id ->
+            val style = WidgetStyles.load(this, id)
+            val item = LayoutInflater.from(this).inflate(R.layout.item_widget, list, false)
+            WidgetPreview.bind(item.findViewById(R.id.itemPreview), style, store)
+            item.findViewById<TextView>(R.id.itemTitle).text = "Widget ${index + 1}"
+            item.findViewById<TextView>(R.id.itemSubtitle).text = if (style.showLegend) "com legenda" else "sem legenda"
+            item.pressable(0.98f)
+            item.setOnClickListener {
+                Sheets.widgetEditor(this, style, "Widget ${index + 1}", "Salvar") { newStyle, dialog ->
+                    WidgetStyles.save(this, id, newStyle)
+                    ClockWidgetProvider.updateWidget(this, id)
+                    dialog.dismiss()
+                }
+            }
+            list.addView(item)
+        }
+    }
+
+    // ---------- Código ----------
+
+    private fun setupCode() {
+        findViewById<View>(R.id.copyButton).apply { pressable(0.9f); setOnClickListener { copyCode() } }
+        findViewById<View>(R.id.shareButton).apply { pressable(0.9f); setOnClickListener { shareCode() } }
+
+        val input = findViewById<EditText>(R.id.codeInput)
+        input.addTextChangedListener(object : TextWatcher {
+            private var editing = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) {
+                if (editing || s == null) return
+                val clean = s.toString().uppercase().filter { it.isLetterOrDigit() }.take(6)
+                val formatted = if (clean.length > 3) clean.substring(0, 3) + "-" + clean.substring(3) else clean
+                if (formatted != s.toString()) {
+                    editing = true
+                    s.replace(0, s.length, formatted)
+                    editing = false
+                }
+            }
+        })
+        input.setOnEditorActionListener { _, action, _ ->
+            if (action == EditorInfo.IME_ACTION_DONE) { applyCode(); true } else false
+        }
+        findViewById<View>(R.id.applyCodeButton).apply { pressable(0.97f); setOnClickListener { applyCode() } }
+    }
+
+    private fun applyCode() {
+        val input = findViewById<EditText>(R.id.codeInput)
+        val offset = CalibrationCode.decode(input.text.toString())
+        if (offset == null) {
+            input.reject()
+            input.animate().translationX(10f.dp).setDuration(60).withEndAction {
+                input.animate().translationX(0f).setInterpolator(OvershootInterpolator(6f)).setDuration(260).start()
+            }.start()
+            Snackbar.make(findViewById(R.id.root), "Código inválido", Snackbar.LENGTH_SHORT).setAnchorView(nav).show()
+            return
+        }
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(input.windowToken, 0)
+        input.text.clear()
+        input.clearFocus()
+        changeOffset(offset, true, "Código aplicado · " + ClockOffset.status(offset, true))
+        selectTab(0)
     }
 
     private fun copyCode() {
-        val code = currentCodeOrNull()
-        if (code == null) {
-            Toast.makeText(this, "Calibre primeiro para gerar um código", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Código de calibração", code))
-        Toast.makeText(this, "Código $code copiado", Toast.LENGTH_SHORT).show()
+        if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
+        val code = CalibrationCode.encode(store.offsetMillis)
+        (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
+            .setPrimaryClip(ClipData.newPlainText("Código de calibração", code))
+        findViewById<View>(R.id.copyButton).confirm()
+        snack("Código $code copiado")
     }
 
-    private fun openCodeDialog() {
-        val view = layoutInflater.inflate(R.layout.dialog_code, null)
-        val ownCode = view.findViewById<TextView>(R.id.dialogOwnCode)
-        val ownCodeHint = view.findViewById<TextView>(R.id.dialogOwnCodeHint)
-        val input = view.findViewById<EditText>(R.id.dialogCodeInput)
-
-        val code = currentCodeOrNull()
-        ownCode.text = code ?: "—"
-        if (code == null) {
-            ownCodeHint.text = "Calibre primeiro para gerar um código."
-        }
-
-        val dialog = AlertDialog.Builder(this).setView(view).create()
-
-        view.findViewById<View>(R.id.dialogCopyButton).setOnClickListener { copyCode() }
-
-        view.findViewById<View>(R.id.dialogApplyButton).setOnClickListener {
-            val offsetMillis = CalibrationCode.decode(input.text.toString())
-            if (offsetMillis == null) {
-                Toast.makeText(this, "Código inválido", Toast.LENGTH_SHORT).show()
-            } else {
-                applyOffset(offsetMillis, viaCode = true)
-                val label = if (offsetMillis >= 0) "atrasada" else "adiantada"
-                Toast.makeText(
-                    this,
-                    "Aplicado: escola $label ${ClockOffset.formatDuration(offsetMillis)}",
-                    Toast.LENGTH_LONG
-                ).show()
-                dialog.dismiss()
-            }
-        }
-
-        dialog.show()
+    private fun shareCode() {
+        if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
+        val code = CalibrationCode.encode(store.offsetMillis)
+        val send = Intent(Intent.ACTION_SEND).setType("text/plain")
+            .putExtra(Intent.EXTRA_TEXT, "Código do Hora da Escola: $code")
+        startActivity(Intent.createChooser(send, "Enviar código"))
     }
 
-    private fun openThemeDialog() {
-        val view = layoutInflater.inflate(R.layout.dialog_theme, null)
-        val dialog = AlertDialog.Builder(this).setView(view).create()
-
-        val appOptions = listOf(
-            ThemeMode.SYSTEM to view.findViewById<TextView>(R.id.appThemeSystem),
-            ThemeMode.LIGHT to view.findViewById(R.id.appThemeLight),
-            ThemeMode.DARK to view.findViewById(R.id.appThemeDark)
-        )
-        val widgetOptions = listOf(
-            ThemeMode.SYSTEM to view.findViewById<TextView>(R.id.widgetThemeSystem),
-            ThemeMode.LIGHT to view.findViewById(R.id.widgetThemeLight),
-            ThemeMode.DARK to view.findViewById(R.id.widgetThemeDark)
-        )
-
-        paintSegments(appOptions, prefs.getInt(Prefs.APP_THEME, ThemeMode.SYSTEM))
-        paintSegments(widgetOptions, prefs.getInt(Prefs.WIDGET_THEME, ThemeMode.SYSTEM))
-
-        for ((mode, button) in appOptions) {
-            button.setOnClickListener {
-                prefs.edit().putInt(Prefs.APP_THEME, mode).apply()
-                paintSegments(appOptions, mode)
-                ThemeMode.applyAppTheme(this)
-            }
-        }
-
-        for ((mode, button) in widgetOptions) {
-            button.setOnClickListener {
-                prefs.edit().putInt(Prefs.WIDGET_THEME, mode).apply()
-                paintSegments(widgetOptions, mode)
-                ClockWidgetProvider.updateAllWidgets(this)
-            }
-        }
-
-        dialog.show()
-    }
-
-    private fun paintSegments(options: List<Pair<Int, TextView>>, selected: Int) {
-        for ((mode, button) in options) {
-            val isSelected = mode == selected
-            button.setBackgroundResource(
-                if (isSelected) R.drawable.bg_segment_selected else R.drawable.bg_segment
-            )
-            button.setTextColor(
-                ContextCompat.getColor(this, if (isSelected) R.color.card_bg else R.color.text_secondary)
-            )
-        }
-    }
-
-    private fun pinWidget() {
-        try {
-            val appWidgetManager = AppWidgetManager.getInstance(this)
-            val provider = ComponentName(this, ClockWidgetProvider::class.java)
-            if (appWidgetManager.isRequestPinAppWidgetSupported) {
-                appWidgetManager.requestPinAppWidget(provider, null, null)
-            } else {
-                Toast.makeText(this, "Adicione o widget manualmente: segure a tela inicial > Widgets", Toast.LENGTH_LONG).show()
-            }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Não foi possível fixar automaticamente. Adicione pela tela inicial > Widgets.", Toast.LENGTH_LONG).show()
-        }
+    private fun snack(message: String) {
+        Snackbar.make(findViewById(R.id.root), message, Snackbar.LENGTH_SHORT).setAnchorView(nav).show()
     }
 }

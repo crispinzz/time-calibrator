@@ -1,33 +1,32 @@
 <resources>
-    <color name="screen_bg">#0E0E11</color>
-    <color name="frame_bg">#17171B</color>
-    <color name="frame_stroke">#26262E</color>
-    <color name="card_bg">#1C1C22</color>
-    <color name="pill_action_bg">#1F1F26</color>
-    <color name="pill_action_stroke">#2E2E38</color>
-    <color name="icon_circle_stroke">#3A3A46</color>
-    <color name="field_bg">#1F1F26</color>
-    <color name="field_stroke">#33333E</color>
-    <color name="divider">#2A2A33</color>
+    <color name="accent_pressed">#FF3355</color>
 
-    <color name="text_primary">#F4F4F7</color>
-    <color name="text_secondary">#9A9AB0</color>
-    <color name="text_muted">#83839A</color>
-    <color name="icon_stroke">#A5A5C8</color>
-    <color name="icon_stroke_soft">#8E8EA8</color>
+    <color name="screen_bg">#0A0A0B</color>
+    <color name="surface">#161618</color>
+    <color name="surface_muted">#212124</color>
+    <color name="outline">#2C2C30</color>
+    <color name="outline_soft">#232326</color>
+    <color name="accent_soft">#3B0711</color>
+    <color name="ripple">#1FFFFFFF</color>
 
-    <color name="widget_card">#000000</color>
-    <color name="widget_stroke">#262626</color>
+    <color name="text_primary">#F5F5F7</color>
+    <color name="text_secondary">#8E8E93</color>
+    <color name="text_tertiary">#4E4E53</color>
+
+    <color name="inverse_bg">#F1F1F1</color>
+    <color name="inverse_text">#0A0A0A</color>
+    <color name="inverse_secondary">#6E6E73</color>
+    <color name="inverse_line">#E3E3E5</color>
+
+    <color name="nav_bg">#EB232326</color>
+    <color name="nav_item">#333337</color>
+    <color name="nav_icon">#C9C9CE</color>
+
+    <color name="status_idle">#5A5A5F</color>
+
+    <color name="preview_wall_start">#3A0D18</color>
+    <color name="preview_wall_end">#1B1830</color>
+
+    <color name="widget_card">#0A0A0A</color>
     <color name="widget_text">#FFFFFF</color>
-    <color name="widget_pill_bg">#1A1A1A</color>
-    <color name="widget_pill_text">#B4B4B4</color>
-
-    <color name="pill_neutral_bg">#26262E</color>
-    <color name="pill_neutral_text">#A0A0B0</color>
-    <color name="pill_success_bg">#17331F</color>
-    <color name="pill_success_text">#5FD08A</color>
-    <color name="pill_warning_bg">#332612</color>
-    <color name="pill_warning_text">#E0A94B</color>
-    <color name="pill_info_bg">#18243D</color>
-    <color name="pill_info_text">#7FA6F0</color>
 </resources>

@@ -11,10 +11,8 @@ object ThemeMode {
     const val DARK = 2
 
     fun applyAppTheme(context: Context) {
-        val mode = context.getSharedPreferences(Prefs.NAME, Context.MODE_PRIVATE)
-            .getInt(Prefs.APP_THEME, SYSTEM)
         AppCompatDelegate.setDefaultNightMode(
-            when (mode) {
+            when (ClockStore(context).appTheme) {
                 LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
                 DARK -> AppCompatDelegate.MODE_NIGHT_YES
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
@@ -22,12 +20,15 @@ object ThemeMode {
         )
     }
 
-    /** Contexto com o modo claro/escuro forçado, para resolver as cores do widget. */
-    fun contextFor(context: Context, mode: Int): Context {
-        if (mode == SYSTEM) return context
-        val config = Configuration(context.resources.configuration)
-        val night = if (mode == DARK) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
-        config.uiMode = (config.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or night
-        return context.createConfigurationContext(config)
+    fun label(mode: Int) = when (mode) {
+        LIGHT -> "Claro"
+        DARK -> "Escuro"
+        else -> "Sistema"
+    }
+
+    /** Modo escuro do sistema, ignorando o tema escolhido para o app. */
+    fun isSystemNight(context: Context): Boolean {
+        val uiMode = context.applicationContext.resources.configuration.uiMode
+        return uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 }

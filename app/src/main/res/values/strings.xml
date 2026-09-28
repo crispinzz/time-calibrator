@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Hora da Escola</string>
+    <string name="widget_description">A hora do sinal da escola, com as suas cores.</string>
 </resources>

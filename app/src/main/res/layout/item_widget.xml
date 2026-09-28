@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <include
+        android:id="@+id/itemPreview"
+        layout="@layout/view_widget_preview" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp">
+
+        <TextView
+            android:id="@+id/itemTitle"
+            style="@style/Text.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/itemSubtitle"
+            style="@style/Text.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1" />
+
+        <TextView
+            style="@style/Text.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_outline"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="8dp"
+            android:text="Editar"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

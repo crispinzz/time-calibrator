@@ -1,35 +1,38 @@
 <resources>
-    <color name="ic_launcher_background">#2547F4</color>
+    <color name="ic_launcher_background">#E60023</color>
 
-    <color name="screen_bg">#EAEAEF</color>
-    <color name="frame_bg">#FAFAFC</color>
-    <color name="frame_stroke">#EDEDF2</color>
-    <color name="card_bg">#FFFFFF</color>
-    <color name="pill_action_bg">#FFFFFF</color>
-    <color name="pill_action_stroke">#ECECF1</color>
-    <color name="icon_circle_stroke">#DCDCE8</color>
-    <color name="field_bg">#F5F5F9</color>
-    <color name="field_stroke">#E2E2EC</color>
-    <color name="divider">#ECECF2</color>
+    <color name="accent">#E60023</color>
+    <color name="accent_pressed">#B8001C</color>
+    <color name="on_accent">#FFFFFF</color>
 
-    <color name="text_primary">#0F0F16</color>
-    <color name="text_secondary">#75758C</color>
-    <color name="text_muted">#8686A0</color>
-    <color name="icon_stroke">#6B6B96</color>
-    <color name="icon_stroke_soft">#8A8AA8</color>
+    <color name="screen_bg">#F1F1F1</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_muted">#F3F3F4</color>
+    <color name="outline">#DEDEE1</color>
+    <color name="outline_soft">#EAEAEC</color>
+    <color name="accent_soft">#FFE4E9</color>
+    <color name="ripple">#14000000</color>
+
+    <color name="text_primary">#0A0A0A</color>
+    <color name="text_secondary">#8A8A8F</color>
+    <color name="text_tertiary">#BDBDC2</color>
+
+    <color name="inverse_bg">#0A0A0A</color>
+    <color name="inverse_text">#FFFFFF</color>
+    <color name="inverse_secondary">#8A8A8F</color>
+    <color name="inverse_line">#1C1C1F</color>
+
+    <color name="nav_bg">#EB161618</color>
+    <color name="nav_item">#2A2A2D</color>
+    <color name="nav_icon">#C9C9CE</color>
+
+    <color name="status_ok">#1FA65A</color>
+    <color name="status_off">#E60023</color>
+    <color name="status_idle">#BDBDC2</color>
+
+    <color name="preview_wall_start">#FFD9DF</color>
+    <color name="preview_wall_end">#E9E4F5</color>
 
     <color name="widget_card">#FFFFFF</color>
-    <color name="widget_stroke">#E4E4E8</color>
-    <color name="widget_text">#000000</color>
-    <color name="widget_pill_bg">#F0F0F2</color>
-    <color name="widget_pill_text">#4F4F55</color>
-
-    <color name="pill_neutral_bg">#EDEDF2</color>
-    <color name="pill_neutral_text">#6B6B76</color>
-    <color name="pill_success_bg">#DCF3E3</color>
-    <color name="pill_success_text">#1E8A4C</color>
-    <color name="pill_warning_bg">#FCEBD3</color>
-    <color name="pill_warning_text">#B9770E</color>
-    <color name="pill_info_bg">#DCE8FC</color>
-    <color name="pill_info_text">#2A5FCC</color>
+    <color name="widget_text">#0A0A0A</color>
 </resources>
