@@ -78,7 +78,10 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.themeButton).apply {
             pressable(0.9f)
-            setOnClickListener { Sheets.theme(this@MainActivity) { ThemeMode.applyAppTheme(this@MainActivity) } }
+            setOnClickListener { Sheets.theme(this@MainActivity) {
+                ClockWidgetProvider.updateAllWidgets(this@MainActivity)
+                ThemeMode.applyAppTheme(this@MainActivity)
+            } }
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

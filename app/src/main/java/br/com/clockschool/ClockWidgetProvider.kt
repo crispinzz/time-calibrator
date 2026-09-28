@@ -151,18 +151,24 @@ class ClockWidgetProvider : AppWidgetProvider() {
         }
 
         private fun applyColors(context: Context, views: RemoteViews, style: WidgetStyle) {
+            // "Automático" segue o tema escolhido no app; só em Sistema depende do claro/escuro do celular.
+            val forced = when (ClockStore(context).appTheme) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                else -> null
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // O launcher escolhe a variante clara/escura na hora, sem precisar de nova atualização.
-                val bgDay = style.backgroundFor(false)
-                val bgNight = style.backgroundFor(true)
-                val textDay = style.textFor(false)
-                val textNight = style.textFor(true)
+                val bgDay = style.backgroundFor(forced ?: false)
+                val bgNight = style.backgroundFor(forced ?: true)
+                val textDay = style.textFor(forced ?: false)
+                val textNight = style.textFor(forced ?: true)
                 views.setColorInt(R.id.widgetBg, "setColorFilter", bgDay, bgNight)
                 views.setColorInt(R.id.widgetTime, "setTextColor", textDay, textNight)
                 views.setColorInt(R.id.widgetLegendText, "setTextColor", textDay, textNight)
                 views.setColorInt(R.id.widgetLegendBg, "setColorFilter", textDay, textNight)
             } else {
-                val night = ThemeMode.isSystemNight(context)
+                val night = forced ?: ThemeMode.isSystemNight(context)
                 views.setInt(R.id.widgetBg, "setColorFilter", style.backgroundFor(night))
                 views.setTextColor(R.id.widgetTime, style.textFor(night))
                 views.setTextColor(R.id.widgetLegendText, style.textFor(night))
