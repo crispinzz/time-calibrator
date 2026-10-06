@@ -13,6 +13,7 @@
 ![platform](https://img.shields.io/badge/platform-Android%208.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white)
 ![kotlin](https://img.shields.io/badge/kotlin-2.0-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![target](https://img.shields.io/badge/target%20SDK-35-555?style=flat-square)
+[![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 **An adjustable clock for Android. Sync your phone with a clock that runs fast or slow (a school bell, an office time clock, a wall clock)<br>and see that clock's exact time in real time, in the app and in a home screen widget.**
 
@@ -145,6 +146,6 @@ app/src/test/java/br/com/timecalibrator/
 
 <div align="center">
 
-Built by **[Gabriel Crispin](https://github.com/crispinzz)**.
+Built by **[Gabriel Crispin](https://github.com/crispinzz)**. Released under the [MIT License](LICENSE).
 
 </div>
