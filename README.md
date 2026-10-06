@@ -13,7 +13,7 @@
 ![kotlin](https://img.shields.io/badge/kotlin-2.0-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![target](https://img.shields.io/badge/target%20SDK-35-555?style=flat-square)
 
-**An Android app that calibrates your phone against an external clock (a school bell, an office time clock, a wall clock)<br>and shows that clock's time in real time, in the app and on your home screen.**
+**An adjustable clock for Android. Sync your phone with a clock that runs fast or slow (a school bell, an office time clock, a wall clock)<br>and see that clock's exact time in real time, in the app and in a home screen widget.**
 
 <br>
 
@@ -31,7 +31,7 @@ Many clocks that run your day are not synchronized with real time:
 - **Work**: the time clock is 2 min 14 s behind.
 - **Gym, bus, exams, shifts**: anywhere with an "official" clock that doesn't match yours.
 
-Instead of subtracting minutes in your head every time, Time Calibrator measures the offset **once** and then shows that clock's time, to the second, in the app and in a home screen widget.
+If you have ever searched for an *adjustable clock*, a *clock with a custom offset* or a way to *set your phone clock a few minutes ahead or behind* without changing the system time, this is it. Instead of subtracting minutes in your head every time, Time Calibrator measures the offset **once** and then shows that clock's time, to the second, in the app and in a home screen widget.
 
 ## How it works
 
