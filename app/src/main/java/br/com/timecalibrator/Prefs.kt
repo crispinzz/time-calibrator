@@ -11,6 +11,8 @@ object Prefs {
     const val APP_THEME = "app_theme"
     const val SCHEDULED_HOUR = "scheduled_hour"
     const val SCHEDULED_MINUTE = "scheduled_minute"
+    const val APP_LANGUAGE = "app_language"
+    const val ONBOARDING_DONE = "onboarding_done"
 
     /** Tema único que os widgets usavam antes de cada um ter o próprio estilo. */
     const val LEGACY_WIDGET_THEME = "widget_theme"
@@ -65,7 +67,7 @@ object Clocks {
     }
 
     fun name(context: Context, id: Int): String =
-        Prefs.of(context).getString(nameKey(id), null)?.takeIf { it.isNotBlank() } ?: "Relógio ${ids(context).indexOf(id) + 1}"
+        Prefs.of(context).getString(nameKey(id), null)?.takeIf { it.isNotBlank() } ?: context.getString(R.string.clock_default_name, ids(context).indexOf(id) + 1)
 
     fun rename(context: Context, id: Int, name: String) {
         Prefs.of(context).edit().putString(nameKey(id), name.trim()).apply()

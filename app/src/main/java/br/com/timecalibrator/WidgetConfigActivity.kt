@@ -45,7 +45,7 @@ class WidgetConfigActivity : AppCompatActivity() {
 
         Clocks.claimPending(this, intArrayOf(id))
         val clockId = Clocks.forWidget(this, id)
-        WidgetEditor(editor, WidgetStyles.load(this, id), "Personalizar widget", "Salvar", clockId, Clocks.name(this, clockId)) { style, name ->
+        WidgetEditor(editor, WidgetStyles.load(this, id), getString(R.string.customize_widget), getString(R.string.save), clockId, Clocks.name(this, clockId)) { style, name ->
             Clocks.saveStyle(this, clockId, style)
             if (name.isNotEmpty()) Clocks.rename(this, clockId, name)
             WidgetStyles.clearLegacy(this, id)

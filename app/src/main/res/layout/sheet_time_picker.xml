@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Horário do sinal"
+        android:text="@string/bell_time"
         android:textSize="15sp" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Quando o sinal toca?"
+        android:text="@string/when_bell"
         android:textSize="26sp" />
 
     <FrameLayout
@@ -53,7 +53,7 @@
                 android:id="@+id/wheelHour"
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
-                android:contentDescription="Hora" />
+                android:contentDescription="@string/hour" />
 
             <TextView
                 style="@style/Text"
@@ -66,7 +66,7 @@
                 android:id="@+id/wheelMinute"
                 android:layout_width="104dp"
                 android:layout_height="wrap_content"
-                android:contentDescription="Minuto" />
+                android:contentDescription="@string/minute" />
         </LinearLayout>
     </FrameLayout>
 
@@ -83,5 +83,5 @@
         style="@style/Button.Primary"
         android:layout_width="match_parent"
         android:layout_marginTop="24dp"
-        android:text="Confirmar" />
+        android:text="@string/confirm" />
 </LinearLayout>

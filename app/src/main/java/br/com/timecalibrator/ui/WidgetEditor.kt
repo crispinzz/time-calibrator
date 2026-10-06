@@ -35,7 +35,7 @@ object WidgetPreview {
             offsetMillis = store.offsetMillis
         }
         preview.findViewById<TextView>(R.id.previewLegend).apply {
-            val legend = style.legendFor(ClockOffset.status(store.offsetMillis, store.isCalibrated))
+            val legend = style.legendFor(ClockOffset.status(preview.context, store.offsetMillis, store.isCalibrated))
             visibility = if (style.showLegend && legend.isNotEmpty()) View.VISIBLE else View.GONE
             this.text = legend
             setTextColor(text)
@@ -105,7 +105,7 @@ class WidgetEditor(
 
         legendInput.filters = arrayOf(InputFilter.LengthFilter(WidgetStyle.LEGEND_MAX))
         legendInput.setText(style.legendText)
-        legendInput.hint = "Texto opcional"
+        legendInput.hint = legendInput.context.getString(R.string.optional_text)
         legendInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
@@ -147,13 +147,13 @@ class WidgetEditor(
             for (c in WidgetStyle.SWATCHES) {
                 val v = SwatchView(row.context).apply {
                     if (c == null) kind = SwatchView.Kind.AUTO else color = c
-                    contentDescription = if (c == null) "Automático" else String.format("#%06X", c and 0xFFFFFF)
+                    contentDescription = if (c == null) context.getString(R.string.automatic) else String.format("#%06X", c and 0xFFFFFF)
                     setOnClickListener { pick(c) }
                 }
                 addSwatch(v)
                 swatches += v to c
             }
-            custom.contentDescription = "Cor personalizada"
+            custom.contentDescription = row.context.getString(R.string.custom_color)
             custom.setOnClickListener { toggleCustom() }
             addSwatch(custom)
 

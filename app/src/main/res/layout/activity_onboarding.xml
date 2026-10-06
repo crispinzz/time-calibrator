@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="12dp">
+
+        <LinearLayout
+            android:id="@+id/languageOptions"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pill_muted"
+            android:orientation="horizontal"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/skipButton"
+            style="@style/Text.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingEnd="4dp"
+            android:text="@string/ob_skip"
+            android:textColor="@color/text_secondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="112dp">
+
+            <br.com.timecalibrator.ui.LiveClockView
+                android:id="@+id/obClock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autoSizeMaxTextSize="84sp"
+                android:autoSizeMinTextSize="40sp"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="sans-serif"
+                android:fontFeatureSettings="tnum"
+                android:gravity="start|center_vertical"
+                android:includeFontPadding="false"
+                android:letterSpacing="-0.03"
+                android:maxLines="1"
+                android:textColor="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/obIcon"
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="@drawable/bg_dot"
+                android:backgroundTint="@color/accent"
+                android:importantForAccessibility="no"
+                android:padding="30dp"
+                android:tint="@color/on_accent" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/obTitle"
+            style="@style/Text.Display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp" />
+
+        <TextView
+            android:id="@+id/obBody"
+            style="@style/Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dots"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal" />
+
+    <TextView
+        android:id="@+id/nextButton"
+        style="@style/Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="16dp" />
+
+</LinearLayout>

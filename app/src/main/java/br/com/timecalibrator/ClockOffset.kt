@@ -1,5 +1,6 @@
 package br.com.timecalibrator
 
+import android.content.Context
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
@@ -70,10 +71,10 @@ object ClockOffset {
     }
 
     /** Frase de estado usada no app e na legenda automática dos widgets. */
-    fun status(offsetMillis: Long, calibrated: Boolean): String = when {
-        !calibrated -> "não calibrado"
-        offsetMillis / 1000 == 0L -> "sincronizado"
-        offsetMillis > 0 -> "${formatHuman(offsetMillis)} atrasado"
-        else -> "${formatHuman(offsetMillis)} adiantado"
+    fun status(context: Context, offsetMillis: Long, calibrated: Boolean): String = when {
+        !calibrated -> context.getString(R.string.status_not_calibrated)
+        offsetMillis / 1000 == 0L -> context.getString(R.string.status_synced)
+        offsetMillis > 0 -> context.getString(R.string.status_behind, formatHuman(offsetMillis))
+        else -> context.getString(R.string.status_ahead, formatHuman(offsetMillis))
     }
 }

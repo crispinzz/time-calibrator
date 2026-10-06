@@ -60,6 +60,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (!OnboardingActivity.isDone(this)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
         setContentView(R.layout.activity_main)
 
         clock = findViewById(R.id.calibratedClock)
@@ -187,7 +192,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.quickPlus).apply { pressable(0.9f); setOnClickListener { nudge(-1000) } }
         findViewById<View>(R.id.quickReset).apply {
             pressable(0.9f)
-            setOnClickListener { changeOffset(0L, false, "Ajuste zerado") }
+            setOnClickListener { changeOffset(0L, false, getString(R.string.offset_reset)) }
         }
         findViewById<View>(R.id.homeApply).apply {
             pressable(0.97f)
@@ -216,7 +221,7 @@ class MainActivity : AppCompatActivity() {
             set(Calendar.MILLISECOND, 0)
         }
         val offset = ClockOffset.normalize(now - scheduled.timeInMillis)
-        changeOffset(offset, false, "Calibrado · " + ClockOffset.status(offset, true))
+        changeOffset(offset, false, getString(R.string.calibrated_msg, ClockOffset.status(this, offset, true)))
     }
 
     private fun nudge(delta: Long) {
@@ -238,7 +243,7 @@ class MainActivity : AppCompatActivity() {
             .setBackgroundTint(color(R.color.inverse_bg))
             .setTextColor(color(R.color.inverse_text))
             .setActionTextColor(color(R.color.accent))
-            .setAction("Desfazer") {
+            .setAction(R.string.undo) {
                 store.restore(before)
                 ClockWidgetProvider.updateAllWidgets(this)
                 refresh()
@@ -250,11 +255,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateGreeting(calibrated: Long) {
         val hour = Calendar.getInstance().apply { timeInMillis = calibrated }.get(Calendar.HOUR_OF_DAY)
-        val text = when (hour) {
-            in 5..11 -> "Bom dia"
-            in 12..17 -> "Boa tarde"
-            else -> "Boa noite"
-        }
+        val text = getString(
+            when (hour) {
+                in 5..11 -> R.string.greeting_morning
+                in 12..17 -> R.string.greeting_afternoon
+                else -> R.string.greeting_evening
+            }
+        )
         if (text != greeting) {
             greeting = text
             findViewById<TextView>(R.id.greetingText).text = text
@@ -272,10 +279,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.quickSchedule).text = scheduled
         findViewById<TextView>(R.id.scheduleChip).text = scheduled
         findViewById<TextView>(R.id.calibrateHint).text =
-            "Toque em Calibrar no instante em que o sinal das $scheduled tocar."
+            getString(R.string.calibrate_hint, scheduled)
 
         findViewById<TextView>(R.id.statusText).text =
-            ClockOffset.status(offset, calibrated).replaceFirstChar { it.uppercase() }
+            ClockOffset.status(this, offset, calibrated).replaceFirstChar { it.uppercase() }
         val dot = when {
             !calibrated -> R.color.status_idle
             offset / 1000 == 0L -> R.color.status_ok
@@ -284,16 +291,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.statusDot).backgroundTintList = ColorStateList.valueOf(color(dot))
         findViewById<TextView>(R.id.calibrationInfo).text = if (calibrated) {
             val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(store.lastCalibrationAt))
-            if (store.calibratedViaCode) "código às $time" else "ajustado às $time"
+            getString(if (store.calibratedViaCode) R.string.via_code_at else R.string.adjusted_at, time)
         } else ""
 
         val code = if (calibrated) CalibrationCode.encode(offset) else null
         findViewById<TextView>(R.id.homeCode).text = code ?: "—"
         findViewById<TextView>(R.id.codeBig).text = code ?: "—"
         findViewById<TextView>(R.id.codeHint).text = if (code == null) {
-            "Calibre primeiro para gerar o seu código."
+            getString(R.string.code_hint_empty)
         } else {
-            "Mande para um colega: ele aplica e fica com o mesmo horário, sem precisar calibrar."
+            getString(R.string.code_hint)
         }
 
         findViewById<TextView>(R.id.widgetsBadge).text = Clocks.ids(this).size.toString()
@@ -301,7 +308,7 @@ class MainActivity : AppCompatActivity() {
         WidgetPreview.bind(findViewById(R.id.homePreview), Clocks.style(this, store.clockId), store)
         val applied = ClockWidgetProvider.widgetsOf(this, store.clockId).isNotEmpty()
         findViewById<TextView>(R.id.homeApply).apply {
-            text = if (applied) "Widget aplicado" else "Aplicar widget"
+            text = getString(if (applied) R.string.widget_applied else R.string.apply_widget)
             isEnabled = !applied
             setBackgroundResource(if (applied) R.drawable.bg_pill_muted else R.drawable.bg_button_primary)
             setTextColor(color(if (applied) R.color.text_secondary else R.color.on_accent))
@@ -312,10 +319,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyWidget(clockId: Int) {
         if (ClockWidgetProvider.widgetsOf(this, clockId).isNotEmpty()) {
-            snack("Este relógio já tem um widget na tela")
+            snack(getString(R.string.already_has_widget))
             return
         }
-        if (!ClockWidgetProvider.requestPin(this, clockId)) snack("Segure a tela inicial › Widgets › Time Calibrator")
+        if (!ClockWidgetProvider.requestPin(this, clockId)) snack(getString(R.string.pin_manually))
     }
 
     // ---------- Widgets ----------
@@ -324,9 +331,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.newWidgetButton).apply {
             pressable(0.97f)
             setOnClickListener {
-                Sheets.widgetEditor(this@MainActivity, WidgetStyle(), "Novo relógio", "Criar relógio", store.clockId, "") { style, name, dialog ->
+                Sheets.widgetEditor(this@MainActivity, WidgetStyle(), getString(R.string.new_clock), getString(R.string.create_clock), store.clockId, "") { style, name, dialog ->
                     dialog.dismiss()
-                    val id = Clocks.create(this@MainActivity, name.ifEmpty { "Relógio ${Clocks.ids(this@MainActivity).size + 1}" }, style)
+                    val id = Clocks.create(this@MainActivity, name.ifEmpty { getString(R.string.clock_default_name, Clocks.ids(this@MainActivity).size + 1) }, style)
                     Clocks.setActive(this@MainActivity, id)
                     refresh()
                     selectTab(0)
@@ -349,8 +356,8 @@ class MainActivity : AppCompatActivity() {
             item.findViewById<TextView>(R.id.itemTitle).text = if (id == active) "$name  ●" else name
             val widgets = ClockWidgetProvider.widgetsOf(this, id).size
             item.findViewById<TextView>(R.id.itemSubtitle).text =
-                ClockOffset.status(clockStore.offsetMillis, clockStore.isCalibrated) +
-                    if (widgets > 0) " · $widgets na tela" else ""
+                ClockOffset.status(this, clockStore.offsetMillis, clockStore.isCalibrated) +
+                    if (widgets > 0) " · " + getString(R.string.on_screen, widgets) else ""
             item.pressable(0.98f)
             // Tocar abre o relógio na Home para calibrar.
             item.setOnClickListener {
@@ -362,10 +369,10 @@ class MainActivity : AppCompatActivity() {
             item.setOnLongClickListener {
                 if (Clocks.ids(this).size > 1) {
                     androidx.appcompat.app.AlertDialog.Builder(this)
-                        .setTitle("Excluir \"$name\"?")
-                        .setMessage("Widgets dele passam a mostrar o primeiro relógio.")
-                        .setNegativeButton("Cancelar", null)
-                        .setPositiveButton("Excluir") { _, _ ->
+                        .setTitle(getString(R.string.delete_title, name))
+                        .setMessage(R.string.delete_msg)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.delete) { _, _ ->
                             Clocks.delete(this, id)
                             ClockWidgetProvider.updateAllWidgets(this)
                             refresh()
@@ -375,7 +382,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             item.findViewById<View>(R.id.itemEdit).setOnClickListener {
-                Sheets.widgetEditor(this, style, name, "Salvar", id, name) { newStyle, newName, dialog ->
+                Sheets.widgetEditor(this, style, name, getString(R.string.save), id, name) { newStyle, newName, dialog ->
                     Clocks.saveStyle(this, id, newStyle)
                     if (newName.isNotEmpty()) Clocks.rename(this, id, newName)
                     for (w in ClockWidgetProvider.widgetsOf(this, id)) WidgetStyles.clearLegacy(this, w)
@@ -428,31 +435,31 @@ class MainActivity : AppCompatActivity() {
             input.animate().translationX(10f.dp).setDuration(60).withEndAction {
                 input.animate().translationX(0f).setInterpolator(OvershootInterpolator(6f)).setDuration(260).start()
             }.start()
-            Snackbar.make(findViewById(R.id.root), "Código inválido", Snackbar.LENGTH_SHORT).setAnchorView(nav).show()
+            Snackbar.make(findViewById(R.id.root), getString(R.string.invalid_code), Snackbar.LENGTH_SHORT).setAnchorView(nav).show()
             return
         }
         (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(input.windowToken, 0)
         input.text.clear()
         input.clearFocus()
-        changeOffset(offset, true, "Código aplicado · " + ClockOffset.status(offset, true))
+        changeOffset(offset, true, getString(R.string.code_applied, ClockOffset.status(this, offset, true)))
         selectTab(0)
     }
 
     private fun copyCode() {
-        if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
+        if (!store.isCalibrated) return snack(getString(R.string.calibrate_first))
         val code = CalibrationCode.encode(store.offsetMillis)
         (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-            .setPrimaryClip(ClipData.newPlainText("Código de calibração", code))
+            .setPrimaryClip(ClipData.newPlainText(getString(R.string.calibration_code), code))
         findViewById<View>(R.id.copyButton).confirm()
-        snack("Código $code copiado")
+        snack(getString(R.string.code_copied, code))
     }
 
     private fun shareCode() {
-        if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
+        if (!store.isCalibrated) return snack(getString(R.string.calibrate_first))
         val code = CalibrationCode.encode(store.offsetMillis)
         val send = Intent(Intent.ACTION_SEND).setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, "Código do Time Calibrator: $code")
-        startActivity(Intent.createChooser(send, "Enviar código"))
+            .putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text, code))
+        startActivity(Intent.createChooser(send, getString(R.string.send_code)))
     }
 
     private fun snack(message: String) {

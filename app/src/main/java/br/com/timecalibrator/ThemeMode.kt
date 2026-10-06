@@ -20,11 +20,13 @@ object ThemeMode {
         )
     }
 
-    fun label(mode: Int) = when (mode) {
-        LIGHT -> "Claro"
-        DARK -> "Escuro"
-        else -> "Sistema"
-    }
+    fun label(context: Context, mode: Int): String = context.getString(
+        when (mode) {
+            LIGHT -> R.string.theme_light
+            DARK -> R.string.theme_dark
+            else -> R.string.theme_system
+        }
+    )
 
     /** Modo escuro do sistema, ignorando o tema escolhido para o app. */
     fun isSystemNight(context: Context): Boolean {

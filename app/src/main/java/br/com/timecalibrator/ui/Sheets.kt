@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import br.com.timecalibrator.ClockOffset
 import br.com.timecalibrator.ClockStore
+import br.com.timecalibrator.Lang
 import br.com.timecalibrator.R
 import br.com.timecalibrator.ThemeMode
 import br.com.timecalibrator.WidgetStyle
@@ -82,7 +83,7 @@ object Sheets {
         val dialog = sheet(activity, view)
         val buttons = listOf(ThemeMode.SYSTEM, ThemeMode.LIGHT, ThemeMode.DARK).map { mode ->
             mode to TextView(activity, null, 0, R.style.Text_Label).apply {
-                text = ThemeMode.label(mode)
+                text = ThemeMode.label(activity, mode)
                 gravity = Gravity.CENTER
                 isClickable = true
                 options.addView(this, LinearLayout.LayoutParams(0, -1, 1f))
@@ -103,6 +104,16 @@ object Sheets {
             it.postDelayed({
                 dialog.dismiss()
                 onChanged()
+            }, 180)
+        }
+        Segmented(
+            view.findViewById(R.id.languageOptions),
+            Lang.TAGS.map { Lang.label(activity, it) },
+            Lang.TAGS.indexOf(Lang.current(activity)).coerceAtLeast(0)
+        ) { i ->
+            view.postDelayed({
+                dialog.dismiss()
+                Lang.set(activity, Lang.TAGS[i])
             }, 180)
         }
         dialog.show()

@@ -33,7 +33,7 @@
         android:paddingTop="5dp"
         android:paddingEnd="12dp"
         android:paddingBottom="5dp"
-        android:text="3 min atrasado"
+        android:text="@string/preview_status"
         android:textColor="@color/widget_text"
         android:textSize="12sp" />
 

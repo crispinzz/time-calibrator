@@ -33,7 +33,7 @@
             <ImageView
                 android:id="@+id/themeButton"
                 style="@style/CircleButton"
-                android:contentDescription="Aparência"
+                android:contentDescription="@string/appearance"
                 android:src="@drawable/ic_theme" />
 
         </LinearLayout>
@@ -66,7 +66,7 @@
                         style="@style/Text.Eyebrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Boa tarde" />
+                        android:text="@string/greeting_afternoon" />
 
                     <br.com.timecalibrator.ui.LiveClockView
                         android:id="@+id/calibratedClock"
@@ -147,11 +147,11 @@
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Sinal" />
+                                android:text="@string/quick_bell" />
 
                             <TextView
                                 style="@style/QuickSub"
-                                android:text="horário" />
+                                android:text="@string/quick_bell_sub" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -164,16 +164,16 @@
                             <TextView
                                 android:id="@+id/quickMinus"
                                 style="@style/QuickCircle"
-                                android:contentDescription="Voltar 1 segundo"
+                                android:contentDescription="@string/nudge_back_desc"
                                 android:text="−1s" />
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Ajuste" />
+                                android:text="@string/nudge" />
 
                             <TextView
                                 style="@style/QuickSub"
-                                android:text="voltar 1 s" />
+                                android:text="@string/nudge_back_sub" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -186,16 +186,16 @@
                             <TextView
                                 android:id="@+id/quickPlus"
                                 style="@style/QuickCircle"
-                                android:contentDescription="Avançar 1 segundo"
+                                android:contentDescription="@string/nudge_forward_desc"
                                 android:text="+1s" />
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Ajuste" />
+                                android:text="@string/nudge" />
 
                             <TextView
                                 style="@style/QuickSub"
-                                android:text="avançar 1 s" />
+                                android:text="@string/nudge_forward_sub" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -211,7 +211,7 @@
                                 android:layout_height="64dp"
                                 android:background="@drawable/bg_circle_surface"
                                 android:clickable="true"
-                                android:contentDescription="Zerar ajuste"
+                                android:contentDescription="@string/reset_desc"
                                 android:focusable="true"
                                 android:padding="21dp"
                                 android:src="@drawable/ic_reset"
@@ -219,11 +219,11 @@
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Zerar" />
+                                android:text="@string/reset" />
 
                             <TextView
                                 style="@style/QuickSub"
-                                android:text="sem ajuste" />
+                                android:text="@string/reset_sub" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -246,7 +246,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Calibração" />
+                                android:text="@string/calibration" />
 
                             <TextView
                                 android:id="@+id/scheduleChip"
@@ -295,7 +295,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="sans-serif-medium"
                                 android:gravity="center"
-                                android:text="Calibrar"
+                                android:text="@string/calibrate"
                                 android:textColor="@color/on_accent"
                                 android:textSize="16sp" />
 
@@ -324,7 +324,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="56dp"
                             android:layout_marginTop="10dp"
-                            android:text="Aplicar widget" />
+                            android:text="@string/apply_widget" />
                     </LinearLayout>
 
                     <!-- Código + Widgets -->
@@ -366,7 +366,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="Código"
+                                        android:text="@string/code"
                                         android:textColor="@color/inverse_text"
                                         android:textSize="18sp" />
 
@@ -398,7 +398,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="6dp"
-                                    android:text="compartilhe o ajuste"
+                                    android:text="@string/code_card_sub"
                                     android:textColor="@color/inverse_secondary" />
                             </LinearLayout>
                         </FrameLayout>
@@ -425,7 +425,7 @@
                                     style="@style/Text.Title"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Relógios"
+                                    android:text="@string/clocks"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -463,7 +463,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Cada um com sua calibração"
+                                android:text="@string/clocks_card_sub"
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -492,21 +492,21 @@
                         style="@style/Text.Eyebrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Relógios" />
+                        android:text="@string/clocks" />
 
                     <TextView
                         style="@style/Text.Display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Seus relógios" />
+                        android:text="@string/your_clocks" />
 
                     <TextView
                         style="@style/Text.Body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Cada relógio tem nome, calibração e aparência próprios. Toque para abrir, segure para excluir." />
+                        android:text="@string/clocks_help" />
 
                     <LinearLayout
                         android:id="@+id/widgetList"
@@ -547,7 +547,7 @@
                                 style="@style/Text.Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Novo relógio"
+                                android:text="@string/new_clock"
                                 android:textSize="17sp" />
 
                             <TextView
@@ -555,7 +555,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Dê um nome e calibre" />
+                                android:text="@string/new_clock_sub" />
                         </LinearLayout>
 
                         <ImageView
@@ -591,7 +591,7 @@
                         style="@style/Text.Eyebrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Código de calibração" />
+                        android:text="@string/calibration_code" />
 
                     <TextView
                         android:id="@+id/codeBig"
@@ -628,7 +628,7 @@
                                 android:layout_height="64dp"
                                 android:background="@drawable/bg_circle_surface"
                                 android:clickable="true"
-                                android:contentDescription="Copiar código"
+                                android:contentDescription="@string/copy_code_desc"
                                 android:focusable="true"
                                 android:padding="20dp"
                                 android:src="@drawable/ic_copy"
@@ -636,7 +636,7 @@
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Copiar" />
+                                android:text="@string/copy" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -652,7 +652,7 @@
                                 android:layout_height="64dp"
                                 android:background="@drawable/bg_circle_surface"
                                 android:clickable="true"
-                                android:contentDescription="Compartilhar código"
+                                android:contentDescription="@string/share_code_desc"
                                 android:focusable="true"
                                 android:padding="20dp"
                                 android:src="@drawable/ic_share"
@@ -660,7 +660,7 @@
 
                             <TextView
                                 style="@style/QuickLabel"
-                                android:text="Enviar" />
+                                android:text="@string/send" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -675,14 +675,14 @@
                             style="@style/Text.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Recebeu um código?" />
+                            android:text="@string/received_code" />
 
                         <TextView
                             style="@style/Text.Body"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Aplique e fique com o mesmo horário, sem calibrar." />
+                            android:text="@string/received_code_sub" />
 
                         <EditText
                             android:id="@+id/codeInput"
@@ -707,7 +707,7 @@
                             style="@style/Button.Primary"
                             android:layout_width="match_parent"
                             android:layout_marginTop="12dp"
-                            android:text="Aplicar código" />
+                            android:text="@string/apply_code" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
@@ -766,7 +766,7 @@
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Início"
+                android:contentDescription="@string/nav_home"
                 android:padding="16dp"
                 android:src="@drawable/ic_home"
                 android:tint="@color/nav_icon" />
@@ -777,7 +777,7 @@
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Widgets"
+                android:contentDescription="@string/nav_widgets"
                 android:padding="16dp"
                 android:src="@drawable/ic_widgets"
                 android:tint="@color/nav_icon" />
@@ -788,7 +788,7 @@
                 android:layout_height="56dp"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Código"
+                android:contentDescription="@string/code"
                 android:padding="16dp"
                 android:src="@drawable/ic_key"
                 android:tint="@color/nav_icon" />

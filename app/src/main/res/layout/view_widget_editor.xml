@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Aparência"
+        android:text="@string/appearance"
         android:textSize="26sp" />
 
     <EditText
@@ -26,7 +26,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_field"
-        android:hint="Nome do relógio"
+        android:hint="@string/clock_name_hint"
         android:importantForAutofill="no"
         android:inputType="textCapSentences"
         android:maxLength="28"
@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Fundo" />
+        android:text="@string/background" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -106,7 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Opacidade" />
+            android:text="@string/opacity" />
 
         <TextView
             android:id="@+id/opacityValue"
@@ -132,7 +132,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Texto" />
+        android:text="@string/text" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -195,7 +195,7 @@
                 style="@style/Text.Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Legenda"
+                android:text="@string/caption"
                 android:textSize="16sp" />
 
             <TextView
@@ -203,7 +203,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Texto pequeno abaixo da hora" />
+                android:text="@string/caption_sub" />
         </LinearLayout>
 
         <com.google.android.material.materialswitch.MaterialSwitch
@@ -243,7 +243,7 @@
                 style="@style/Text.Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mostrar atraso?"
+                android:text="@string/show_offset"
                 android:textSize="16sp" />
 
             <TextView
@@ -251,7 +251,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Ex.: 3 min 30 s atrasado" />
+                android:text="@string/show_offset_sub" />
         </LinearLayout>
 
         <com.google.android.material.materialswitch.MaterialSwitch

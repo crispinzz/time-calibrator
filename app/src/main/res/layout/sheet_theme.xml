@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Aparência"
+        android:text="@string/appearance"
         android:textSize="26sp" />
 
     <LinearLayout
@@ -33,9 +33,25 @@
         android:padding="5dp" />
 
     <TextView
+        style="@style/Text.Section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/language" />
+
+    <LinearLayout
+        android:id="@+id/languageOptions"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_pill_muted"
+        android:orientation="horizontal"
+        android:padding="5dp" />
+
+    <TextView
         style="@style/Text.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Em cada relógio, escolha o horário do sinal e toque em Calibrar quando ele tocar. A diferença fica guardada e o app e os widgets mostram a hora certa sozinhos, com precisão de segundo." />
+        android:text="@string/theme_help" />
 </LinearLayout>
