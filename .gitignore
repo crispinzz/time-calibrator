@@ -12,3 +12,8 @@
 *.apk
 *.aab
 /nul
+
+# assinatura de release
+keystore.properties
+*.jks
+*.keystore
