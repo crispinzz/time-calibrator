@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
@@ -11,8 +11,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
-import br.com.clockschool.ui.WidgetEditor
-import br.com.clockschool.ui.dp
+import br.com.timecalibrator.ui.WidgetEditor
+import br.com.timecalibrator.ui.dp
 
 /** Aberta pelo launcher ao adicionar ou reconfigurar um widget. */
 class WidgetConfigActivity : AppCompatActivity() {

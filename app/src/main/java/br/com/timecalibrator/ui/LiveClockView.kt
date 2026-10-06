@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.content.Context
 import android.text.SpannableString
@@ -7,7 +7,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
-import br.com.clockschool.ClockOffset
+import br.com.timecalibrator.ClockOffset
 
 /**
  * Mostra a hora corrigida com precisão de segundo. O próximo tique é agendado para a
@@ -33,23 +33,23 @@ class LiveClockView @JvmOverloads constructor(
             tick()
         }
 
-    var onTick: ((schoolMillis: Long) -> Unit)? = null
+    var onTick: ((calibratedMillis: Long) -> Unit)? = null
 
     private var lastText: String? = null
     private val ticker = Runnable { tick() }
 
     private fun tick() {
         removeCallbacks(ticker)
-        val school = ClockOffset.schoolNow(offsetMillis)
-        render(school)
-        onTick?.invoke(school)
+        val calibrated = ClockOffset.calibratedNow(offsetMillis)
+        render(calibrated)
+        onTick?.invoke(calibrated)
         if (isAttachedToWindow && windowVisibility == View.VISIBLE) {
-            postDelayed(ticker, 1000 - Math.floorMod(school, 1000L) + 2)
+            postDelayed(ticker, 1000 - Math.floorMod(calibrated, 1000L) + 2)
         }
     }
 
-    private fun render(school: Long) {
-        val text = ClockOffset.formatClock(school)
+    private fun render(calibrated: Long) {
+        val text = ClockOffset.formatClock(calibrated)
         if (text == lastText) return
         lastText = text
         val muted = secondsColor

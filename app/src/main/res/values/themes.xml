@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.ClockSchool" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.TimeCalibrator" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/accent</item>
         <item name="colorOnPrimary">@color/on_accent</item>
         <item name="colorPrimaryContainer">@color/accent_soft</item>
@@ -16,15 +16,15 @@
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:textColorHint">@color/text_tertiary</item>
         <item name="android:textCursorDrawable">@drawable/cursor_accent</item>
-        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.ClockSchool.Sheet</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.TimeCalibrator.Sheet</item>
     </style>
 
-    <style name="ThemeOverlay.ClockSchool.Sheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/Widget.ClockSchool.Sheet</item>
+    <style name="ThemeOverlay.TimeCalibrator.Sheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.TimeCalibrator.Sheet</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="Widget.ClockSchool.Sheet" parent="Widget.Material3.BottomSheet.Modal">
+    <style name="Widget.TimeCalibrator.Sheet" parent="Widget.Material3.BottomSheet.Modal">
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="shapeAppearance">@null</item>
     </style>

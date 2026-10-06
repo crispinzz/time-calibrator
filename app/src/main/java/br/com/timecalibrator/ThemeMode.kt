@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import android.content.Context
 import android.content.res.Configuration

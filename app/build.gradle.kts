@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "br.com.clockschool"
+    namespace = "br.com.timecalibrator"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "br.com.clockschool"
+        applicationId = "br.com.timecalibrator"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

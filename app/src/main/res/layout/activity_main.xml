@@ -68,8 +68,8 @@
                         android:layout_height="wrap_content"
                         android:text="Boa tarde" />
 
-                    <br.com.clockschool.ui.LiveClockView
-                        android:id="@+id/schoolClock"
+                    <br.com.timecalibrator.ui.LiveClockView
+                        android:id="@+id/calibratedClock"
                         android:layout_width="match_parent"
                         android:layout_height="92dp"
                         android:autoSizeMaxTextSize="84sp"

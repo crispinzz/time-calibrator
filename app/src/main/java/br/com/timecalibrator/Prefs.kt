@@ -1,10 +1,10 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import android.content.Context
 import android.content.SharedPreferences
 
 object Prefs {
-    const val NAME = "clock_school_prefs"
+    const val NAME = "time_calibrator_prefs"
     const val OFFSET_MILLIS = "offset_millis"
     const val LAST_CALIBRATION_AT = "last_calibration_at"
     const val CALIBRATED_VIA_CODE = "calibrated_via_code"

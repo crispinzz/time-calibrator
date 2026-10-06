@@ -20,7 +20,7 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <br.com.clockschool.ui.LiveClockView
+        <br.com.timecalibrator.ui.LiveClockView
             android:id="@+id/previewTime"
             android:layout_width="match_parent"
             android:layout_height="0dp"

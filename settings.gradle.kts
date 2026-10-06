@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "ClockSchool"
+rootProject.name = "time-calibrator"
 include(":app")

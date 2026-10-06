@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import java.util.Calendar
 import java.util.Locale
@@ -21,19 +21,19 @@ object ClockOffset {
     }
 
     /** Hora corrigida agora, em milissegundos de época. */
-    fun schoolNow(offsetMillis: Long, now: Long = System.currentTimeMillis()): Long = now - offsetMillis
+    fun calibratedNow(offsetMillis: Long, now: Long = System.currentTimeMillis()): Long = now - offsetMillis
 
     /** Milissegundos desde a meia-noite local da hora corrigida. */
-    fun millisOfDay(schoolMillis: Long): Long {
-        val cal = Calendar.getInstance().apply { timeInMillis = schoolMillis }
+    fun millisOfDay(calibratedMillis: Long): Long {
+        val cal = Calendar.getInstance().apply { timeInMillis = calibratedMillis }
         return cal.get(Calendar.HOUR_OF_DAY) * 3_600_000L +
             cal.get(Calendar.MINUTE) * 60_000L +
             cal.get(Calendar.SECOND) * 1_000L +
             cal.get(Calendar.MILLISECOND)
     }
 
-    fun formatClock(schoolMillis: Long, withSeconds: Boolean = true): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = schoolMillis }
+    fun formatClock(calibratedMillis: Long, withSeconds: Boolean = true): String {
+        val cal = Calendar.getInstance().apply { timeInMillis = calibratedMillis }
         val h = cal.get(Calendar.HOUR_OF_DAY)
         val m = cal.get(Calendar.MINUTE)
         return if (withSeconds) {

@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 /**
  * Converte a diferença calibrada num código curto compartilhável (ex.: 59X-R8G).

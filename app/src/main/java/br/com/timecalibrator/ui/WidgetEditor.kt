@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -14,10 +14,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
-import br.com.clockschool.ClockOffset
-import br.com.clockschool.ClockStore
-import br.com.clockschool.R
-import br.com.clockschool.WidgetStyle
+import br.com.timecalibrator.ClockOffset
+import br.com.timecalibrator.ClockStore
+import br.com.timecalibrator.R
+import br.com.timecalibrator.WidgetStyle
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
 

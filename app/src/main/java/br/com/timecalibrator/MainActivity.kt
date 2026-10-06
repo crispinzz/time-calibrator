@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
@@ -26,17 +26,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import br.com.clockschool.ui.EMPHASIZED
-import br.com.clockschool.ui.LiveClockView
-import br.com.clockschool.ui.Sheets
-import br.com.clockschool.ui.WidgetPreview
-import br.com.clockschool.ui.color
-import br.com.clockschool.ui.confirm
-import br.com.clockschool.ui.dp
-import br.com.clockschool.ui.pressable
-import br.com.clockschool.ui.pulse
-import br.com.clockschool.ui.reject
-import br.com.clockschool.ui.tick
+import br.com.timecalibrator.ui.EMPHASIZED
+import br.com.timecalibrator.ui.LiveClockView
+import br.com.timecalibrator.ui.Sheets
+import br.com.timecalibrator.ui.WidgetPreview
+import br.com.timecalibrator.ui.color
+import br.com.timecalibrator.ui.confirm
+import br.com.timecalibrator.ui.dp
+import br.com.timecalibrator.ui.pressable
+import br.com.timecalibrator.ui.pulse
+import br.com.timecalibrator.ui.reject
+import br.com.timecalibrator.ui.tick
 import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        clock = findViewById(R.id.schoolClock)
+        clock = findViewById(R.id.calibratedClock)
         clock.secondsColor = color(R.color.text_tertiary)
         clock.onTick = { updateGreeting(it) }
 
@@ -248,8 +248,8 @@ class MainActivity : AppCompatActivity() {
 
     private var greeting = ""
 
-    private fun updateGreeting(school: Long) {
-        val hour = Calendar.getInstance().apply { timeInMillis = school }.get(Calendar.HOUR_OF_DAY)
+    private fun updateGreeting(calibrated: Long) {
+        val hour = Calendar.getInstance().apply { timeInMillis = calibrated }.get(Calendar.HOUR_OF_DAY)
         val text = when (hour) {
             in 5..11 -> "Bom dia"
             in 12..17 -> "Boa tarde"
@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity() {
             snack("Este relógio já tem um widget na tela")
             return
         }
-        if (!ClockWidgetProvider.requestPin(this, clockId)) snack("Segure a tela inicial › Widgets › Clock")
+        if (!ClockWidgetProvider.requestPin(this, clockId)) snack("Segure a tela inicial › Widgets › Time Calibrator")
     }
 
     // ---------- Widgets ----------
@@ -451,7 +451,7 @@ class MainActivity : AppCompatActivity() {
         if (!store.isCalibrated) return snack("Calibre primeiro para gerar um código")
         val code = CalibrationCode.encode(store.offsetMillis)
         val send = Intent(Intent.ACTION_SEND).setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, "Código do Clock: $code")
+            .putExtra(Intent.EXTRA_TEXT, "Código do Time Calibrator: $code")
         startActivity(Intent.createChooser(send, "Enviar código"))
     }
 

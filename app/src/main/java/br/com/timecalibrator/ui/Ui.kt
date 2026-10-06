@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.annotation.SuppressLint
 import android.content.Context

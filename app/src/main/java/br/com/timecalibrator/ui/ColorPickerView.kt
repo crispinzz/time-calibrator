@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.content.Context
 import android.graphics.Canvas

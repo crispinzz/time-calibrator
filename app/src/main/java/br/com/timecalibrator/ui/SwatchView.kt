@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -9,7 +9,7 @@ import android.graphics.Path
 import android.graphics.SweepGradient
 import android.view.View
 import androidx.core.graphics.ColorUtils
-import br.com.clockschool.R
+import br.com.timecalibrator.R
 
 /** Bolinha de cor da paleta: cor fixa, automático (claro/escuro) ou personalizada. */
 class SwatchView(context: Context) : View(context) {

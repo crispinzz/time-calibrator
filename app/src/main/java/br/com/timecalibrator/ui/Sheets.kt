@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.app.Activity
 import android.view.Gravity
@@ -7,11 +7,11 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
-import br.com.clockschool.ClockOffset
-import br.com.clockschool.ClockStore
-import br.com.clockschool.R
-import br.com.clockschool.ThemeMode
-import br.com.clockschool.WidgetStyle
+import br.com.timecalibrator.ClockOffset
+import br.com.timecalibrator.ClockStore
+import br.com.timecalibrator.R
+import br.com.timecalibrator.ThemeMode
+import br.com.timecalibrator.WidgetStyle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.Calendar
@@ -40,7 +40,7 @@ object Sheets {
 
         // Sugestões: as marcas de 5 min mais próximas da hora corrigida agora.
         val cal = Calendar.getInstance().apply {
-            timeInMillis = ClockOffset.schoolNow(ClockStore(activity).offsetMillis)
+            timeInMillis = ClockOffset.calibratedNow(ClockStore(activity).offsetMillis)
         }
         var base = cal.get(Calendar.HOUR_OF_DAY) * 60 + (cal.get(Calendar.MINUTE) + 2) / 5 * 5
         val row = view.findViewById<LinearLayout>(R.id.suggestions)

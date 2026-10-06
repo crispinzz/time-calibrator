@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Clock</string>
+    <string name="app_name">Time Calibrator</string>
     <string name="widget_description">Seu relógio calibrado, com as suas cores.</string>
 </resources>

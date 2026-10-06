@@ -1,4 +1,4 @@
-package br.com.clockschool.ui
+package br.com.timecalibrator.ui
 
 import android.content.Context
 import android.graphics.Canvas
@@ -14,7 +14,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Scroller
 import androidx.core.graphics.ColorUtils
-import br.com.clockschool.R
+import br.com.timecalibrator.R
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.asin

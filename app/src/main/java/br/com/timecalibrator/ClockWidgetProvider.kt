@@ -1,4 +1,4 @@
-package br.com.clockschool
+package br.com.timecalibrator
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -74,9 +74,9 @@ class ClockWidgetProvider : AppWidgetProvider() {
 
     companion object {
 
-        const val ACTION_PINNED = "br.com.clockschool.action.WIDGET_PINNED"
-        private const val ACTION_TRANSITION = "br.com.clockschool.action.CLOCK_TRANSITION"
-        private const val EXTRA_CLOCK = "br.com.clockschool.extra.CLOCK"
+        const val ACTION_PINNED = "br.com.timecalibrator.action.WIDGET_PINNED"
+        private const val ACTION_TRANSITION = "br.com.timecalibrator.action.CLOCK_TRANSITION"
+        private const val EXTRA_CLOCK = "br.com.timecalibrator.extra.CLOCK"
 
         private const val HOUR = 3_600_000L
         private val TRANSITIONS = longArrayOf(1 * HOUR, 10 * HOUR, 24 * HOUR)
@@ -120,7 +120,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
             val style = WidgetStyles.load(context, appWidgetId)
             val views = RemoteViews(context.packageName, R.layout.widget_clock)
 
-            val msOfDay = ClockOffset.millisOfDay(ClockOffset.schoolNow(store.offsetMillis))
+            val msOfDay = ClockOffset.millisOfDay(ClockOffset.calibratedNow(store.offsetMillis))
             views.setChronometer(
                 R.id.widgetTime,
                 SystemClock.elapsedRealtime() - msOfDay,
@@ -193,7 +193,7 @@ class ClockWidgetProvider : AppWidgetProvider() {
             val now = System.currentTimeMillis()
             // A próxima virada entre todos os relógios em uso.
             val triggerAt = widgetIds(context).map { Clocks.forWidget(context, it) }.distinct().minOf { clockId ->
-                val msOfDay = ClockOffset.millisOfDay(ClockOffset.schoolNow(ClockStore(context, clockId).offsetMillis, now))
+                val msOfDay = ClockOffset.millisOfDay(ClockOffset.calibratedNow(ClockStore(context, clockId).offsetMillis, now))
                 now + (TRANSITIONS.first { it > msOfDay } - msOfDay) + 20
             }
             // Folga mínima para já estarmos do outro lado da virada quando o alarme chegar.
